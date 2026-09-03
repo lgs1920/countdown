@@ -183,6 +183,14 @@ h3 {
     font-size: 1rem;
 }
 
+.storage-note {
+    margin-inline-start: auto;
+}
+
+.color-swatch {
+    font-size: 0.8rem;
+}
+
 a {
     color: var(--demo-accent);
 }

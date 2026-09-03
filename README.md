@@ -218,16 +218,20 @@ The four units always remain on one line. Card widths scale from the available i
 
 ## Live examples
 
-Run the Bun demo locally:
+Run the Bun demo locally in watch mode:
 
 ```bash
 bun install
 bun run dev
 ```
 
-Then open `http://localhost:4173`. The demo includes live examples for every appearance, both animations, locale handling, ratio customization, responsive single-row rendering, theme selection, light/dark modes, and brand colors.
+Then open `http://localhost:4173`. The command keeps the server running and rebuilds the demo automatically when a file changes in `src/` or `demo/`; refresh the browser to see the result. Press `Ctrl+C` to stop it. To use another port, run `PORT=4174 bun run dev`.
+
+The demo includes live examples for every appearance, both animations, locale handling, ratio customization, responsive single-row rendering, theme selection, light/dark modes, and brand colors.
 
 Every demo control is applied immediately: selecting an appearance, animation, locale, theme, color mode, or brand color updates the playground without an additional confirmation button. The ratio updates while its value is edited. The demo bundles the Web Awesome base stylesheet and theme styles as CSS assets; the countdown package itself keeps the Web Awesome stylesheet import in the host application.
+
+The demo stores the selected controls in the browser's `localStorage` and restores them on the next launch. To reset the saved configuration, run `localStorage.removeItem('lgs1920-countdown-demo-config')` in the browser console and reload the page.
 
 The included GitHub Actions workflow publishes the same `dist` directory to GitHub Pages whenever `main` changes. Enable GitHub Pages with the `GitHub Actions` source in the repository settings to publish the live demo at the package homepage.
 

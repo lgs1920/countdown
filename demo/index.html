@@ -12,7 +12,7 @@
 <main class="demo-shell">
     <header class="demo-header">
         <p class="eyebrow">@lgs1920/countdown</p>
-        <h1>A countdown that flips with purpose.</h1>
+        <h1>A countdown that flips... or not.</h1>
         <wa-callout class="intro" variant="brand" appearance="filled">
             A standalone, localized Web Component with Web Awesome cards, themed surfaces, and responsive single-row rendering.
         </wa-callout>
@@ -30,17 +30,17 @@
                 <wa-option value="shoelace">Shoelace</wa-option>
             </wa-select>
             <wa-select id="mode-control" label="Color mode" value="dark">
-                <wa-option value="light">Light</wa-option>
-                <wa-option value="dark">Dark</wa-option>
+                <wa-option value="light"><wa-icon slot="start" name="sun"></wa-icon>Light</wa-option>
+                <wa-option value="dark"><wa-icon slot="start" name="moon"></wa-icon>Dark</wa-option>
             </wa-select>
             <wa-select id="color-control" label="Brand color" value="blue">
-                <wa-option value="blue">Blue</wa-option>
-                <wa-option value="red">Red</wa-option>
-                <wa-option value="orange">Orange</wa-option>
-                <wa-option value="green">Green</wa-option>
-                <wa-option value="cyan">Cyan</wa-option>
-                <wa-option value="purple">Purple</wa-option>
-                <wa-option value="pink">Pink</wa-option>
+                <wa-option value="blue"><wa-icon slot="start" name="circle" class="color-swatch" style="color: var(--wa-color-blue)"></wa-icon>Blue</wa-option>
+                <wa-option value="red"><wa-icon slot="start" name="circle" class="color-swatch" style="color: var(--wa-color-red)"></wa-icon>Red</wa-option>
+                <wa-option value="orange"><wa-icon slot="start" name="circle" class="color-swatch" style="color: var(--wa-color-orange)"></wa-icon>Orange</wa-option>
+                <wa-option value="green"><wa-icon slot="start" name="circle" class="color-swatch" style="color: var(--wa-color-green)"></wa-icon>Green</wa-option>
+                <wa-option value="cyan"><wa-icon slot="start" name="circle" class="color-swatch" style="color: var(--wa-color-cyan)"></wa-icon>Cyan</wa-option>
+                <wa-option value="purple"><wa-icon slot="start" name="circle" class="color-swatch" style="color: var(--wa-color-purple)"></wa-icon>Purple</wa-option>
+                <wa-option value="pink"><wa-icon slot="start" name="circle" class="color-swatch" style="color: var(--wa-color-pink)"></wa-icon>Pink</wa-option>
             </wa-select>
             <wa-select id="appearance-control" label="Appearance" value="filled-outlined">
                 <wa-option value="filled">Filled</wa-option>
@@ -48,8 +48,8 @@
                 <wa-option value="filled-outlined">Filled outlined</wa-option>
             </wa-select>
             <wa-select id="animation-control" label="Animation" value="flip">
-                <wa-option value="flip">Flip</wa-option>
-                <wa-option value="fade">Fade</wa-option>
+                <wa-option value="flip"><wa-icon slot="start" name="rotate"></wa-icon>Flip</wa-option>
+                <wa-option value="fade"><wa-icon slot="start" name="eye"></wa-icon>Fade</wa-option>
             </wa-select>
             <wa-select id="locale-control" label="Labels" value="en">
                 <wa-option value="en">English</wa-option>
@@ -63,7 +63,7 @@
         <div class="section-heading">
             <div>
                 <p class="eyebrow">Live playground</p>
-                <h2 id="playground-title">All units stay on one line</h2>
+                <h2 id="playground-title">Max is 999 days - 23:59:59</h2>
             </div>
             <code>target-date + 2 days</code>
         </div>
@@ -117,6 +117,7 @@
             <wa-icon name="npm" family="brands"></wa-icon>
             <span>Install from npm</span>
         </a>
+        <span class="storage-note">Your configuration is saved in your browser.</span>
     </footer>
 </main>
 <script type="module" src="./app.js"></script>

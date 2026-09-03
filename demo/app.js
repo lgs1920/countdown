@@ -21,6 +21,7 @@ const THEME_CONFIG = {
 
 const THEME_CLASSES = Object.values(THEME_CONFIG).flatMap(({theme, palette}) => [theme, palette])
 const MODE_CLASSES = ['wa-light', 'wa-dark']
+const STORAGE_KEY = 'lgs1920-countdown-demo-config'
 
 const playground = document.querySelector('#playground-countdown')
 const themeControl = document.querySelector('#theme-control')
@@ -30,6 +31,57 @@ const appearanceControl = document.querySelector('#appearance-control')
 const animationControl = document.querySelector('#animation-control')
 const localeControl = document.querySelector('#locale-control')
 const ratioControl = document.querySelector('#ratio-control')
+
+const readStoredConfig = () => {
+    try {
+        const storedConfig = JSON.parse(localStorage.getItem(STORAGE_KEY) ?? '{}')
+
+        return {
+            theme: THEME_CONFIG[storedConfig.theme] ? storedConfig.theme : themeControl.value,
+            mode: ['light', 'dark'].includes(storedConfig.mode) ? storedConfig.mode : modeControl.value,
+            color: ['blue', 'red', 'orange', 'green', 'cyan', 'purple', 'pink'].includes(storedConfig.color) ? storedConfig.color : colorControl.value,
+            appearance: ['filled', 'outlined', 'filled-outlined'].includes(storedConfig.appearance) ? storedConfig.appearance : appearanceControl.value,
+            animation: ['flip', 'fade'].includes(storedConfig.animation) ? storedConfig.animation : animationControl.value,
+            locale: ['en', 'fr'].includes(storedConfig.locale) ? storedConfig.locale : localeControl.value,
+            ratio: typeof storedConfig.ratio === 'string' ? storedConfig.ratio : ratioControl.value,
+        }
+    } catch {
+        return {
+            theme: themeControl.value,
+            mode: modeControl.value,
+            color: colorControl.value,
+            appearance: appearanceControl.value,
+            animation: animationControl.value,
+            locale: localeControl.value,
+            ratio: ratioControl.value,
+        }
+    }
+}
+
+const saveConfig = () => {
+    try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify({
+            theme: themeControl.value,
+            mode: modeControl.value,
+            color: colorControl.value,
+            appearance: appearanceControl.value,
+            animation: animationControl.value,
+            locale: localeControl.value,
+            ratio: ratioControl.value,
+        }))
+    } catch {
+        // Persistence can be unavailable in private or restricted browsing modes.
+    }
+}
+
+const storedConfig = readStoredConfig()
+themeControl.value = storedConfig.theme
+modeControl.value = storedConfig.mode
+colorControl.value = storedConfig.color
+appearanceControl.value = storedConfig.appearance
+animationControl.value = storedConfig.animation
+localeControl.value = storedConfig.locale
+ratioControl.value = storedConfig.ratio
 
 /**
  * Applies a Web Awesome theme and its matching free palette to the document.
@@ -102,6 +154,7 @@ const applyPlaygroundControls = () => {
     }
 
     setRelativeTarget(playground, 172800)
+    saveConfig()
 }
 
 setRelativeTarget(playground, 172800)
@@ -111,9 +164,19 @@ document.querySelectorAll('.example-countdown').forEach((element) => {
 applyTheme(themeControl.value)
 applyColorMode(modeControl.value)
 applyBrandColor(colorControl.value)
-themeControl.addEventListener('change', () => applyTheme(themeControl.value))
-modeControl.addEventListener('change', () => applyColorMode(modeControl.value))
-colorControl.addEventListener('change', () => applyBrandColor(colorControl.value))
+applyPlaygroundControls()
+themeControl.addEventListener('change', () => {
+    applyTheme(themeControl.value)
+    saveConfig()
+})
+modeControl.addEventListener('change', () => {
+    applyColorMode(modeControl.value)
+    saveConfig()
+})
+colorControl.addEventListener('change', () => {
+    applyBrandColor(colorControl.value)
+    saveConfig()
+})
 appearanceControl.addEventListener('change', applyPlaygroundControls)
 animationControl.addEventListener('change', applyPlaygroundControls)
 localeControl.addEventListener('change', applyPlaygroundControls)

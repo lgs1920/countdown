@@ -35,7 +35,7 @@
   "scripts": {
     "test": "bun test",
     "build": "bun run demo:build",
-    "dev": "bun run demo:build && bun run demo:serve",
+    "dev": "bun scripts/dev.js",
     "demo:build": "bun scripts/build-demo.js",
     "demo:serve": "bun scripts/serve-demo.js",
     "publish": "bun scripts/publish.js"
