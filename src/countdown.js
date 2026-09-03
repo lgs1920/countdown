@@ -64,7 +64,7 @@ const COUNTDOWN_STYLES = `
         display: grid;
         grid-template-columns: repeat(4, max-content);
         gap: var(--lgs-countdown-unit-gap);
-        justify-content: space-between;
+        justify-content: center;
         min-inline-size: 0;
     }
 
