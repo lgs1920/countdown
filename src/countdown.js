@@ -63,13 +63,16 @@ const COUNTDOWN_STYLES = `
     .countdown-units {
         display: grid;
         grid-template-columns: repeat(4, max-content);
+        align-items: center;
         gap: var(--lgs-countdown-unit-gap);
         justify-content: center;
+        justify-items: center;
         min-inline-size: 0;
     }
 
     .countdown-unit {
         display: grid;
+        align-items: center;
         justify-items: center;
         gap: var(--wa-space-xs, 0.5rem);
         min-inline-size: 0;
@@ -77,6 +80,7 @@ const COUNTDOWN_STYLES = `
     }
 
     .countdown-digits {
+        align-items: center;
         display: flex;
         flex-wrap: nowrap;
         justify-content: center;
@@ -85,7 +89,8 @@ const COUNTDOWN_STYLES = `
     }
 
     wa-animation {
-        display: block;
+        display: grid;
+        place-items: center;
         flex: 0 0 var(--lgs-countdown-card-width);
         inline-size: var(--lgs-countdown-card-width);
         min-inline-size: 0;
@@ -129,7 +134,8 @@ const COUNTDOWN_STYLES = `
     }
 
     wa-card.countdown-digit-card::part(body) {
-        display: block;
+        display: grid;
+        place-items: center;
         block-size: 100%;
         box-sizing: border-box;
         padding: 0;
@@ -190,6 +196,7 @@ const COUNTDOWN_STYLES = `
         display: grid;
         place-items: center;
         block-size: 200%;
+        text-align: center;
         font: inherit;
         line-height: 1;
     }
