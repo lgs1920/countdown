@@ -1,6 +1,6 @@
 {
   "name": "@lgs1920/countdown",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "A localized, theme-aware countdown Web Component built with Web Awesome.",
   "type": "module",
   "license": "MIT",
