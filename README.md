@@ -197,9 +197,11 @@ The following component properties can be overridden by the host application:
 | `--lgs-countdown-legend-color` | Unit label color | `--wa-color-text-normal` |
 | `--lgs-countdown-card-radius` | Digit card and leaf radius | `--wa-panel-border-radius` |
 | `--lgs-countdown-digit-gap` | Gap between digits in one unit | `--wa-space-3xs` (`2px`) |
-| `--lgs-countdown-unit-gap` | Gap between Days, Hours, Minutes, and Seconds | `--wa-space-m` |
+| `--lgs-countdown-unit-gap` | Gap between Days, Hours, Minutes, and Seconds | `clamp(var(--wa-space-m), 4cqi, var(--wa-space-xl))` |
 
 The visible gap between digits in one unit is controlled by `--lgs-countdown-digit-gap` and defaults to Web Awesome's `--wa-space-3xs` token (`2px`). The unit gap is independent from that digit gap. A host application can apply its own spacing or brand values without coupling that data to the component.
+
+The default unit gap is responsive to the countdown's inline size: it grows progressively from `--wa-space-m` on narrow cards to `--wa-space-xl` on wide cards. The `4cqi` preferred value uses the component's container query width.
 
 The four units always remain on one line. Card widths scale from the available inline size using the three-digit Days maximum, while the small-screen label token keeps unit names readable on narrow devices.
 
