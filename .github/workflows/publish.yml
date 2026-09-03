@@ -25,18 +25,10 @@ jobs:
       - name: Verify tag matches package version
         id: package
         run: |
-          package_version=$(node -p "require('./package.json').version")
+          package_version=$(bun -p "require('./package.json').version")
           tag_version="${GITHUB_REF_NAME#v}"
           test "$package_version" = "$tag_version"
           echo "version=$package_version" >> "$GITHUB_OUTPUT"
-      - name: Set up Node.js for npm publishing
-        uses: actions/setup-node@v4
-        with:
-          node-version: 24
-          registry-url: https://registry.npmjs.org
-          package-manager-cache: false
-      - name: Update npm CLI
-        run: npm install --global npm@latest
       - name: Check whether the package version is already published
         id: npm-version
         env:
@@ -52,8 +44,9 @@ jobs:
       - name: Publish package to npm
         if: steps.npm-version.outputs.published != 'true'
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-        run: npm publish --access public
+          NPM_CONFIG_REGISTRY: https://registry.npmjs.org/
+          NPM_CONFIG_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: bun publish --access public --tolerate-republish
       - name: Create GitHub release
         env:
           GH_TOKEN: ${{ github.token }}
