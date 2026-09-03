@@ -40,7 +40,7 @@ const COUNTDOWN_COPY = {
 const COUNTDOWN_STYLES = `
     :host {
         --lgs-countdown-height-width-ratio: 1.618033988749895;
-        --lgs-countdown-unit-gap: var(--wa-space-xs, 0.5rem);
+        --lgs-countdown-unit-gap: var(--wa-space-xl);
         --lgs-countdown-digit-gap: var(--wa-space-3xs, 2px);
         --lgs-countdown-card-width: clamp(1rem, calc((100cqi - 3 * var(--lgs-countdown-unit-gap) - 5 * var(--lgs-countdown-digit-gap)) / 9), 5.8rem);
         --lgs-countdown-card-surface: color-mix(in oklab, var(--wa-color-brand-fill-quiet, var(--wa-color-neutral-fill-quiet)) 72%, var(--wa-color-neutral-10) 28%);
