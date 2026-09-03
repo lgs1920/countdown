@@ -38,10 +38,7 @@
     "dev": "bun run demo:build && bun run demo:serve",
     "demo:build": "bun scripts/build-demo.js",
     "demo:serve": "bun scripts/serve-demo.js",
-    "publish": "bun scripts/publish.js",
-    "release:patch": "bun pm version patch && git push origin main --follow-tags",
-    "release:minor": "bun pm version minor && git push origin main --follow-tags",
-    "release:major": "bun pm version major && git push origin main --follow-tags"
+    "publish": "bun scripts/publish.js"
   },
   "dependencies": {
     "@awesome.me/webawesome": "^3.12.0"
