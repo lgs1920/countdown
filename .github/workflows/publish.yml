@@ -24,10 +24,12 @@ jobs:
       - name: Build demo
         run: bun run build
       - name: Verify tag matches package version
+        id: package
         run: |
           package_version=$(node -p "require('./package.json').version")
           tag_version="${GITHUB_REF_NAME#v}"
           test "$package_version" = "$tag_version"
+          echo "version=$package_version" >> "$GITHUB_OUTPUT"
       - name: Set up Node.js for npm publishing
         uses: actions/setup-node@v4
         with:
@@ -36,7 +38,20 @@ jobs:
           package-manager-cache: false
       - name: Update npm CLI
         run: npm install --global npm@latest
+      - name: Check whether the package version is already published
+        id: npm-version
+        env:
+          PACKAGE_NAME: '@lgs1920/countdown'
+          PACKAGE_VERSION: ${{ steps.package.outputs.version }}
+        run: |
+          if npm view "$PACKAGE_NAME@$PACKAGE_VERSION" version >/dev/null 2>&1; then
+            echo "published=true" >> "$GITHUB_OUTPUT"
+            echo "$PACKAGE_NAME@$PACKAGE_VERSION is already published; skipping npm publish."
+          else
+            echo "published=false" >> "$GITHUB_OUTPUT"
+          fi
       - name: Publish package to npm
+        if: steps.npm-version.outputs.published != 'true'
         run: npm publish --access public
       - name: Create GitHub release
         env:
