@@ -1,12 +1,12 @@
-const args = new Set(Bun.argv.slice(2));
-const increments = ['patch', 'minor', 'major'].filter(increment => args.has(`--${increment}`));
+const args = Bun.argv.slice(2);
+const increments = ['patch', 'minor', 'major'];
 
-if (increments.length !== 1 || args.size !== 1) {
-  console.error('Usage: bun run publish --patch|--minor|--major');
+if (args.length > 1 || args.some(arg => !increments.includes(arg.slice(2)) || !arg.startsWith('--'))) {
+  console.error('Usage: bun run publish [--patch|--minor|--major]');
   process.exit(1);
 }
 
-const increment = increments[0];
+const increment = args.length === 0 ? 'patch' : args[0].slice(2);
 
 function output(command, commandArgs) {
   const result = Bun.spawnSync([command, ...commandArgs], {
