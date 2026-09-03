@@ -44,6 +44,7 @@ jobs:
       - name: Publish package to npm
         if: steps.npm-version.outputs.published != 'true'
         env:
+          COUNTDOWN_BUN_PUBLISH_LIFECYCLE: '1'
           NPM_CONFIG_REGISTRY: https://registry.npmjs.org/
           NPM_CONFIG_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: bun publish

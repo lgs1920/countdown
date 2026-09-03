@@ -1,3 +1,5 @@
+if (process.env.COUNTDOWN_BUN_PUBLISH_LIFECYCLE === '1') process.exit(0);
+
 const args = Bun.argv.slice(2);
 const increments = ['patch', 'minor', 'major'];
 
