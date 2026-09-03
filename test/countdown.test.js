@@ -9,6 +9,10 @@ test('exposes custom element lifecycle callbacks on its prototype', () => {
     assert.equal(typeof Lgs1920Countdown.prototype.attributeChangedCallback, 'function')
 })
 
+test('observes locale changes for immediate re-rendering', () => {
+    assert.ok(Lgs1920Countdown.observedAttributes.includes('lang'))
+})
+
 test('uses the golden ratio as the default card height-to-width ratio', () => {
     assert.equal(getCountdownRatio(), GOLDEN_RATIO)
     assert.equal(getCountdownRatio('1.25'), 1.25)

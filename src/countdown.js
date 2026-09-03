@@ -560,7 +560,7 @@ const CountdownElementBase = typeof HTMLElement === 'undefined' ? class {} : HTM
  * Displays a localized, branded countdown using Web Awesome components.
  */
 export class Lgs1920Countdown extends CountdownElementBase {
-    static observedAttributes = ['target-date', 'ratio', 'appearance', 'animation']
+    static observedAttributes = ['target-date', 'ratio', 'appearance', 'animation', 'lang']
 
     /**
      * Creates the countdown shadow root and initializes its timer state.
@@ -572,6 +572,7 @@ export class Lgs1920Countdown extends CountdownElementBase {
         this.renderedDigitCount = null
         this.renderedAppearance = null
         this.renderedAnimation = null
+        this.renderedLocale = null
 
         if (typeof this.attachShadow === 'function') {
             this.attachShadow({mode: 'open'})
@@ -616,7 +617,7 @@ export class Lgs1920Countdown extends CountdownElementBase {
             return
         }
 
-        if (name === 'appearance' || name === 'animation') {
+        if (name === 'appearance' || name === 'animation' || name === 'lang') {
             this.updateCountdown()
             return
         }
@@ -673,11 +674,12 @@ export class Lgs1920Countdown extends CountdownElementBase {
         const appearance = getCountdownAppearance(this.getAttribute('appearance'))
         const animation = getCountdownAnimation(this.getAttribute('animation'), appearance)
 
-        if (state.status !== this.renderedStatus || digitCount !== this.renderedDigitCount || appearance !== this.renderedAppearance || animation !== this.renderedAnimation) {
+        if (state.status !== this.renderedStatus || digitCount !== this.renderedDigitCount || appearance !== this.renderedAppearance || animation !== this.renderedAnimation || locale !== this.renderedLocale) {
             this.renderedStatus = state.status
             this.renderedDigitCount = digitCount
             this.renderedAppearance = appearance
             this.renderedAnimation = animation
+            this.renderedLocale = locale
 
             if (state.parts) {
                 this.shadowRoot.innerHTML = `<style>${COUNTDOWN_STYLES}</style>${createCountdownMarkup(state.parts, locale, appearance, animation)}`
