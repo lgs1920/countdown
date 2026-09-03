@@ -194,7 +194,7 @@ a {
     }
 }
 
-@media (max-width: 960px) {
+@media (max-width: 1200px) {
     .controls-grid,
     .example-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
