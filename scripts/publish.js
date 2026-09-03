@@ -25,6 +25,16 @@ function output(command, commandArgs) {
   return new TextDecoder().decode(result.stdout).trim();
 }
 
+async function run(command, commandArgs) {
+  const process = Bun.spawn([command, ...commandArgs], {
+    stdout: 'inherit',
+    stderr: 'inherit'
+  });
+
+  const exitCode = await process.exited;
+  if (exitCode !== 0) process.exit(exitCode);
+}
+
 if (output('git', ['status', '--porcelain'])) {
   console.error('Publication arrêtée : le dépôt contient des changements non commités.');
   process.exit(1);
@@ -36,15 +46,39 @@ if (latestTag && !output('git', ['diff', '--name-only', `${latestTag}..HEAD`, '-
   process.exit(1);
 }
 
-async function run(command, commandArgs) {
-  const process = Bun.spawn([command, ...commandArgs], {
-    stdout: 'inherit',
-    stderr: 'inherit'
-  });
+const packageJson = await Bun.file('./package.json').json();
+const currentVersion = /^([0-9]+)\.([0-9]+)\.([0-9]+)$/.exec(packageJson.version);
 
-  const exitCode = await process.exited;
-  if (exitCode !== 0) process.exit(exitCode);
+if (!currentVersion) {
+  console.error(`Version invalide dans package.json : ${packageJson.version}`);
+  process.exit(1);
 }
 
-await run('bun', ['pm', 'version', increment]);
+let [major, minor, patch] = currentVersion.slice(1).map(Number);
+if (increment === 'major') {
+  major += 1;
+  minor = 0;
+  patch = 0;
+} else if (increment === 'minor') {
+  minor += 1;
+  patch = 0;
+} else {
+  patch += 1;
+}
+
+const nextVersion = `${major}.${minor}.${patch}`;
+const readme = await Bun.file('./README.md').text();
+const releaseLine = /^The current release is `[^`]+`/m;
+
+if (!releaseLine.test(readme)) {
+  console.error('Publication arrêtée : ligne de version introuvable dans README.md.');
+  process.exit(1);
+}
+
+const updatedReadme = readme.replace(releaseLine, `The current release is \`${nextVersion}\``);
+await Bun.write('./package.json', `${JSON.stringify({...packageJson, version: nextVersion}, null, 2)}\n`);
+await Bun.write('./README.md', updatedReadme);
+await run('git', ['add', 'package.json', 'README.md']);
+await run('git', ['commit', '-m', `v${nextVersion}`]);
+await run('git', ['tag', '-a', `v${nextVersion}`, '-m', `v${nextVersion}`]);
 await run('git', ['push', 'origin', 'main', '--follow-tags']);

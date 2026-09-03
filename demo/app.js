@@ -1,6 +1,7 @@
 import '@awesome.me/webawesome/dist/components/number-input/number-input.js'
 import '@awesome.me/webawesome/dist/components/option/option.js'
 import '@awesome.me/webawesome/dist/components/select/select.js'
+import '@awesome.me/webawesome/dist/components/icon/icon.js'
 import '../src/index.js'
 
 const THEME_CONFIG = {

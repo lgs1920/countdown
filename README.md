@@ -2,7 +2,7 @@
 
 `@lgs1920/countdown` is a Web Component designed exclusively for applications using [Web Awesome](https://webawesome.com/). It renders a localized countdown with Web Awesome digit cards and requires Web Awesome at runtime for its stylesheet, theme tokens, cards, animations, and error messages. It cannot function correctly outside a Web Awesome environment.
 
-The current release is `1.0.0`.
+The current release is `1.0.4`. See the [npm package](https://www.npmjs.com/package/@lgs1920/countdown).
 
 The component supports:
 
@@ -228,6 +228,23 @@ Then open `http://localhost:4173`. The demo includes live examples for every app
 Every demo control is applied immediately: selecting an appearance, animation, locale, theme, color mode, or brand color updates the playground without an additional confirmation button. The ratio updates while its value is edited. The demo bundles the Web Awesome base stylesheet and theme styles as CSS assets; the countdown package itself keeps the Web Awesome stylesheet import in the host application.
 
 The included GitHub Actions workflow publishes the same `dist` directory to GitHub Pages whenever `main` changes. Enable GitHub Pages with the `GitHub Actions` source in the repository settings to publish the live demo at the package homepage.
+
+## Publish on npm
+
+The release script manages the package version and keeps the release displayed above in sync with `package.json`:
+
+```bash
+# 1.0.4 -> 1.0.5 (patch is the default)
+bun run publish
+
+# 1.0.4 -> 1.1.0
+bun run publish --minor
+
+# 1.0.4 -> 2.0.0
+bun run publish --major
+```
+
+The script stops when there are uncommitted changes or when no changes have been made in `src` or `scripts` since the last `v*` tag. When it succeeds, it updates `package.json` and this README, creates the version commit and tag, then pushes them to `main`. The tag starts the GitHub Actions workflow, which runs the tests, publishes the package to npm with the `NPM_TOKEN` repository secret, and creates the GitHub release.
 
 ## License
 

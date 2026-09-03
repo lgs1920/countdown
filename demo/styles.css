@@ -173,6 +173,16 @@ h3 {
     font-size: 0.85rem;
 }
 
+.demo-footer a {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--wa-space-2xs);
+}
+
+.demo-footer wa-icon {
+    font-size: 1rem;
+}
+
 a {
     color: var(--demo-accent);
 }
