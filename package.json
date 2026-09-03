@@ -1,0 +1,49 @@
+{
+  "name": "@lgs1920/countdown",
+  "version": "1.0.0",
+  "description": "A localized, theme-aware countdown Web Component built with Web Awesome.",
+  "type": "module",
+  "license": "MIT",
+  "author": {
+    "name": "LGS1920",
+    "url": "https://github.com/lgs1920"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lgs1920/countdown.git"
+  },
+  "homepage": "https://lgs1920.github.io/countdown/",
+  "bugs": {
+    "url": "https://github.com/lgs1920/countdown/issues"
+  },
+  "files": [
+    "src",
+    "README.md",
+    "LICENSE"
+  ],
+  "exports": {
+    ".": {
+      "import": "./src/index.js",
+      "default": "./src/index.js"
+    },
+    "./countdown": "./src/countdown.js",
+    "./package.json": "./package.json"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "test": "bun test",
+    "build": "bun run demo:build",
+    "dev": "bun run demo:build && bun run demo:serve",
+    "demo:build": "bun scripts/build-demo.js",
+    "demo:serve": "bun scripts/serve-demo.js"
+  },
+  "dependencies": {
+    "@awesome.me/webawesome": "^3.12.0"
+  },
+  "engines": {
+    "bun": ">=1.1.0",
+    "node": ">=20"
+  }
+}

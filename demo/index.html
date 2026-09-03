@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en" class="wa-theme-default wa-palette-default wa-dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Live examples for the LGS1920 countdown Web Component">
+    <title>LGS1920 Countdown</title>
+    <link rel="stylesheet" href="./webawesome.css">
+    <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+<main class="demo-shell">
+    <header class="demo-header">
+        <p class="eyebrow">@lgs1920/countdown</p>
+        <h1>A countdown that flips with purpose.</h1>
+        <p class="intro">A standalone, localized Web Component with Web Awesome cards, themed surfaces, and responsive single-row rendering.</p>
+    </header>
+
+    <section class="demo-controls" aria-labelledby="controls-title">
+        <div>
+            <p class="eyebrow">Interactive playground</p>
+            <h2 id="controls-title">Tune the component</h2>
+        </div>
+        <div class="controls-grid">
+            <wa-select id="theme-control" label="Theme" value="default">
+                <wa-option value="default">Default</wa-option>
+                <wa-option value="awesome">Awesome</wa-option>
+                <wa-option value="shoelace">Shoelace</wa-option>
+            </wa-select>
+            <wa-select id="mode-control" label="Color mode" value="dark">
+                <wa-option value="light">Light</wa-option>
+                <wa-option value="dark">Dark</wa-option>
+            </wa-select>
+            <wa-select id="color-control" label="Brand color" value="blue">
+                <wa-option value="blue">Blue</wa-option>
+                <wa-option value="red">Red</wa-option>
+                <wa-option value="orange">Orange</wa-option>
+                <wa-option value="green">Green</wa-option>
+                <wa-option value="cyan">Cyan</wa-option>
+                <wa-option value="purple">Purple</wa-option>
+                <wa-option value="pink">Pink</wa-option>
+            </wa-select>
+            <wa-select id="appearance-control" label="Appearance" value="filled-outlined">
+                <wa-option value="filled">Filled</wa-option>
+                <wa-option value="outlined">Outlined</wa-option>
+                <wa-option value="filled-outlined">Filled outlined</wa-option>
+            </wa-select>
+            <wa-select id="animation-control" label="Animation" value="flip">
+                <wa-option value="flip">Flip</wa-option>
+                <wa-option value="fade">Fade</wa-option>
+            </wa-select>
+            <wa-select id="locale-control" label="Labels" value="en">
+                <wa-option value="en">English</wa-option>
+                <wa-option value="fr">Français</wa-option>
+            </wa-select>
+            <wa-number-input id="ratio-control" label="Height / width ratio" value="1.618" min="0.1" step="0.01"></wa-number-input>
+        </div>
+    </section>
+
+    <section class="playground" aria-labelledby="playground-title">
+        <div class="section-heading">
+            <div>
+                <p class="eyebrow">Live playground</p>
+                <h2 id="playground-title">All units stay on one line</h2>
+            </div>
+            <code>target-date + 2 days</code>
+        </div>
+        <lgs1920-countdown id="playground-countdown" appearance="filled-outlined" animation="flip" lang="en"></lgs1920-countdown>
+    </section>
+
+    <section class="examples" aria-labelledby="examples-title">
+        <div class="section-heading">
+            <div>
+                <p class="eyebrow">Reference examples</p>
+                <h2 id="examples-title">Compare appearances and transitions</h2>
+            </div>
+        </div>
+        <div class="example-grid">
+            <wa-card class="example-card">
+                <div class="example-copy">
+                    <h3>Filled outlined · flip</h3>
+                    <p>Recommended default with an opaque themed surface and standard Web Awesome border.</p>
+                </div>
+                <lgs1920-countdown class="example-countdown" appearance="filled-outlined" animation="flip" lang="en" data-duration="172800"></lgs1920-countdown>
+            </wa-card>
+            <wa-card class="example-card">
+                <div class="example-copy">
+                    <h3>Filled · fade</h3>
+                    <p>A solid card treatment with the same 650 ms transition duration.</p>
+                </div>
+                <lgs1920-countdown class="example-countdown" appearance="filled" animation="fade" lang="en" data-duration="43200"></lgs1920-countdown>
+            </wa-card>
+            <wa-card class="example-card">
+                <div class="example-copy">
+                    <h3>Outlined · automatic fade</h3>
+                    <p>Outlined cards never use a rotor, even when flip is requested.</p>
+                </div>
+                <lgs1920-countdown class="example-countdown" appearance="outlined" animation="flip" lang="fr" data-duration="2700"></lgs1920-countdown>
+            </wa-card>
+        </div>
+    </section>
+
+    <footer class="demo-footer">
+        <a href="https://github.com/lgs1920/countdown">View the package on GitHub</a>
+        <span aria-hidden="true">·</span>
+        <a href="https://github.com/lgs1920/countdown/blob/main/README.md">Read the component reference</a>
+    </footer>
+</main>
+<script type="module" src="./app.js"></script>
+</body>
+</html>

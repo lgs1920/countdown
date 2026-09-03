@@ -1,0 +1,208 @@
+:root {
+    --demo-background: var(--wa-color-surface-default);
+    --demo-panel: var(--wa-color-surface-raised);
+    --demo-panel-border: var(--wa-color-surface-border);
+    --demo-text: var(--wa-color-text-normal);
+    --demo-muted: var(--wa-color-text-quiet);
+    --demo-accent: var(--wa-color-brand);
+    --demo-accent-quiet: var(--wa-color-brand-fill-quiet);
+    background: var(--demo-background);
+    color: var(--demo-text);
+    font-family: var(--wa-font-family-body, system-ui, sans-serif);
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    min-block-size: 100vh;
+    margin: 0;
+    background: radial-gradient(circle at 15% 0%, color-mix(in srgb, var(--wa-color-brand-fill-quiet) 40%, transparent) 0, transparent 35rem), var(--demo-background);
+}
+
+.demo-shell {
+    inline-size: min(100% - 2rem, 72rem);
+    margin: 0 auto;
+    padding: 5rem 0 3rem;
+}
+
+.demo-header {
+    max-inline-size: 44rem;
+    margin-block-end: 3rem;
+}
+
+.eyebrow {
+    margin: 0 0 0.75rem;
+    color: var(--demo-accent);
+    font-size: 0.75rem;
+    font-weight: 750;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+
+h1,
+h2,
+h3,
+p {
+    margin-block-start: 0;
+}
+
+h1 {
+    max-inline-size: 13ch;
+    margin-block-end: 1rem;
+    font-size: clamp(2.8rem, 8vw, 6rem);
+    line-height: 0.95;
+    letter-spacing: -0.06em;
+}
+
+h2 {
+    margin-block-end: 0;
+    font-size: clamp(1.5rem, 3vw, 2.25rem);
+    letter-spacing: -0.04em;
+}
+
+h3 {
+    margin-block-end: 0.5rem;
+    font-size: 1.05rem;
+}
+
+.intro,
+.example-copy p {
+    color: var(--demo-muted);
+    line-height: 1.6;
+}
+
+.intro {
+    max-inline-size: 44rem;
+    margin-block-end: 0;
+    font-size: 1.15rem;
+}
+
+.demo-controls,
+.playground,
+.example-card {
+    border: 1px solid var(--demo-panel-border);
+    background: color-mix(in srgb, var(--demo-panel) 92%, transparent);
+    box-shadow: 0 1.5rem 4rem rgb(0 0 0 / 18%);
+}
+
+.demo-controls,
+.playground {
+    padding: clamp(1.25rem, 4vw, 2rem);
+}
+
+.demo-controls {
+    display: grid;
+    gap: 1.5rem;
+    margin-block-end: 1rem;
+    border-radius: var(--wa-panel-border-radius);
+}
+
+.controls-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    align-items: end;
+    gap: 1rem;
+}
+
+.playground {
+    container-type: inline-size;
+    margin-block-end: 4rem;
+    border-radius: var(--wa-panel-border-radius);
+    background: linear-gradient(145deg, var(--wa-color-brand-fill-quiet), var(--demo-panel));
+}
+
+.section-heading {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-block-end: 2rem;
+}
+
+.section-heading code {
+    color: var(--demo-muted);
+    font-size: 0.8rem;
+}
+
+.playground lgs1920-countdown {
+    --lgs-countdown-card-radius: var(--wa-border-radius-m);
+    --lgs-countdown-card-surface: color-mix(in srgb, var(--wa-color-brand-fill-quiet) 72%, var(--wa-color-surface-default));
+    --lgs-countdown-card-border: var(--wa-color-brand-border-normal);
+    --lgs-countdown-brand-color: var(--wa-color-brand);
+    --lgs-countdown-legend-color: var(--wa-color-text-normal);
+}
+
+.examples {
+    margin-block-end: 3rem;
+}
+
+.example-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1rem;
+}
+
+.example-card {
+    display: grid;
+    gap: 2rem;
+    min-inline-size: 0;
+    padding: 1.25rem;
+    border-radius: var(--wa-panel-border-radius);
+}
+
+.example-copy p {
+    margin-block-end: 0;
+    font-size: 0.9rem;
+}
+
+.example-countdown {
+    --lgs-countdown-card-radius: var(--wa-border-radius-m);
+    --lgs-countdown-card-surface: color-mix(in srgb, var(--wa-color-brand-fill-quiet) 55%, var(--wa-color-surface-default));
+    --lgs-countdown-card-border: var(--wa-color-brand-border-normal);
+    --lgs-countdown-brand-color: var(--demo-accent);
+    --lgs-countdown-legend-color: var(--demo-muted);
+}
+
+.demo-footer {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    color: var(--demo-muted);
+    font-size: 0.85rem;
+}
+
+a {
+    color: var(--demo-accent);
+}
+
+@container (max-width: 35rem) {
+    .section-heading {
+        align-items: start;
+        flex-direction: column;
+    }
+}
+
+@media (max-width: 54rem) {
+    .controls-grid,
+    .example-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 34rem) {
+    .demo-shell {
+        inline-size: min(100% - 1rem, 72rem);
+        padding-block-start: 3rem;
+    }
+
+    .controls-grid,
+    .example-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .playground {
+        padding-inline: 0.75rem;
+    }
+}
