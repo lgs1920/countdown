@@ -195,9 +195,12 @@ a {
 }
 
 @media (max-width: 54rem) {
-    .controls-grid,
-    .example-grid {
+    .controls-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .example-grid {
+        grid-template-columns: 1fr;
     }
 }
 
