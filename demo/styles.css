@@ -145,8 +145,7 @@ h3 {
 }
 
 .example-card {
-    display: grid;
-    gap: 2rem;
+    display: block;
     min-inline-size: 0;
     padding: 1.25rem;
     border-radius: var(--wa-panel-border-radius);
@@ -158,6 +157,7 @@ h3 {
 }
 
 .example-countdown {
+    margin-block-start: var(--wa-space-s);
     --lgs-countdown-card-radius: var(--wa-border-radius-m);
     --lgs-countdown-card-surface: color-mix(in srgb, var(--wa-color-brand-fill-quiet) 55%, var(--wa-color-surface-default));
     --lgs-countdown-card-border: var(--wa-color-brand-border-normal);
