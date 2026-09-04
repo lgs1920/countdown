@@ -57,8 +57,9 @@ if (output('git', ['status', '--porcelain'])) {
 }
 
 const latestTag = output('git', ['tag', '--list', 'v*', '--sort=-version:refname']).split('\n')[0];
-if (latestTag && !output('git', ['diff', '--name-only', `${latestTag}..HEAD`, '--', 'src', 'scripts'])) {
-  console.error(`Publication arrêtée : aucun changement de code dans src ou scripts depuis ${latestTag}.`);
+const releasePaths = ['src', 'demo', 'scripts', 'test', 'README.md'];
+if (latestTag && !output('git', ['diff', '--name-only', `${latestTag}..HEAD`, '--', ...releasePaths])) {
+  console.error(`Publication arrêtée : aucun changement dans ${releasePaths.join(', ')} depuis ${latestTag}.`);
   process.exit(1);
 }
 
