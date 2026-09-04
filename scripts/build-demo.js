@@ -16,6 +16,8 @@
 
 import {copyFile, mkdir, rm} from 'node:fs/promises'
 
+const packageJson = await Bun.file('./package.json').json()
+
 await rm('./dist', {force: true, recursive: true})
 
 const result = await Bun.build({
@@ -51,7 +53,12 @@ if (!stylesResult.success) {
     process.exit(1)
 }
 
-await Bun.write('./dist/index.html', Bun.file('./demo/index.html'))
+const demoHtml = (await Bun.file('./demo/index.html').text()).replace(
+    '@lgs1920/countdown vx.y.z',
+    `@lgs1920/countdown v${packageJson.version}`,
+)
+
+await Bun.write('./dist/index.html', demoHtml)
 await Bun.write('./dist/styles.css', Bun.file('./demo/styles.css'))
 await mkdir('./dist/assets/logo', {recursive: true})
 await copyFile('./demo/assets/logo/logo-horizontal.png', './dist/assets/logo/logo-horizontal.png')
