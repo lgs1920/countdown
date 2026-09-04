@@ -6,6 +6,8 @@ The current release is `1.2.1`. See the [npm package](https://www.npmjs.com/pack
 
 The live demo is based on [Build Awesome (formerly Eleventy/11ty)](https://www.11ty.dev/), built with [Web Awesome](https://webawesome.com/), and uses icons from [Font Awesome](https://fontawesome.com/).
 
+Inspired by [FlipClock](https://flipclock.us/).
+
 ## Breaking change in 1.2
 
 Version 1.2 removes the `lang` attribute. Set the translated unit labels through the `legend` property instead:
