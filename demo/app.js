@@ -1,8 +1,34 @@
+/*******************************************************************************
+ *
+ * This file is part of the LGS1920/countdown project.
+ *
+ * File: app.js
+ *
+ * Author : LGS1920 Team
+ * email: studio@lgs1920.fr
+ *
+ * Created on: 2026-09-04
+ * Last modified: 2026-09-04
+ *
+ *
+ * Copyright © 2026 LGS1920
+ ******************************************************************************/
+
 import '@awesome.me/webawesome/dist/components/number-input/number-input.js'
 import '@awesome.me/webawesome/dist/components/option/option.js'
 import '@awesome.me/webawesome/dist/components/select/select.js'
+import '@awesome.me/webawesome/dist/components/switch/switch.js'
 import '@awesome.me/webawesome/dist/components/icon/icon.js'
+import '@awesome.me/webawesome/dist/components/tooltip/tooltip.js'
 import '../src/index.js'
+
+const LEGENDS = {
+    en: {days: 'Days', hours: 'Hours', minutes: 'Minutes', seconds: 'Seconds'},
+    fr: {days: 'Jours', hours: 'Heures', minutes: 'Minutes', seconds: 'Secondes'},
+    es: {days: 'Días', hours: 'Horas', minutes: 'Minutos', seconds: 'Segundos'},
+    de: {days: 'Tage', hours: 'Stunden', minutes: 'Minuten', seconds: 'Sekunden'},
+    no: {days: 'Dager', hours: 'Timer', minutes: 'Minutter', seconds: 'Sekunder'},
+}
 
 const THEME_CONFIG = {
     default: {
@@ -21,6 +47,8 @@ const THEME_CONFIG = {
 
 const THEME_CLASSES = Object.values(THEME_CONFIG).flatMap(({theme, palette}) => [theme, palette])
 const MODE_CLASSES = ['wa-light', 'wa-dark']
+const FADE_ONLY_APPEARANCES = ['outlined', 'plain']
+const LANGUAGE_CODES = ['en', 'fr', 'es', 'de', 'no']
 const STORAGE_KEY = 'lgs1920-countdown-demo-config'
 
 const playground = document.querySelector('#playground-countdown')
@@ -30,6 +58,7 @@ const colorControl = document.querySelector('#color-control')
 const appearanceControl = document.querySelector('#appearance-control')
 const animationControl = document.querySelector('#animation-control')
 const localeControl = document.querySelector('#locale-control')
+const legendControl = document.querySelector('#legend-control')
 const ratioControl = document.querySelector('#ratio-control')
 
 const readStoredConfig = () => {
@@ -40,9 +69,10 @@ const readStoredConfig = () => {
             theme: THEME_CONFIG[storedConfig.theme] ? storedConfig.theme : themeControl.value,
             mode: ['light', 'dark'].includes(storedConfig.mode) ? storedConfig.mode : modeControl.value,
             color: ['blue', 'red', 'orange', 'green', 'cyan', 'purple', 'pink'].includes(storedConfig.color) ? storedConfig.color : colorControl.value,
-            appearance: ['filled', 'outlined', 'filled-outlined'].includes(storedConfig.appearance) ? storedConfig.appearance : appearanceControl.value,
+            appearance: ['filled', 'outlined', 'filled-outlined', 'plain'].includes(storedConfig.appearance) ? storedConfig.appearance : appearanceControl.value,
             animation: ['flip', 'fade'].includes(storedConfig.animation) ? storedConfig.animation : animationControl.value,
-            locale: ['en', 'fr'].includes(storedConfig.locale) ? storedConfig.locale : localeControl.value,
+            locale: LANGUAGE_CODES.includes(storedConfig.locale) ? storedConfig.locale : localeControl.value,
+            legend: typeof storedConfig.legend === 'boolean' ? storedConfig.legend : legendControl.checked,
             ratio: typeof storedConfig.ratio === 'string' ? storedConfig.ratio : ratioControl.value,
         }
     } catch {
@@ -53,6 +83,7 @@ const readStoredConfig = () => {
             appearance: appearanceControl.value,
             animation: animationControl.value,
             locale: localeControl.value,
+            legend: legendControl.checked,
             ratio: ratioControl.value,
         }
     }
@@ -67,10 +98,10 @@ const saveConfig = () => {
             appearance: appearanceControl.value,
             animation: animationControl.value,
             locale: localeControl.value,
+            legend: legendControl.checked,
             ratio: ratioControl.value,
         }))
     } catch {
-        // Persistence can be unavailable in private or restricted browsing modes.
     }
 }
 
@@ -81,6 +112,7 @@ colorControl.value = storedConfig.color
 appearanceControl.value = storedConfig.appearance
 animationControl.value = storedConfig.animation
 localeControl.value = storedConfig.locale
+legendControl.checked = storedConfig.legend
 ratioControl.value = storedConfig.ratio
 
 /**
@@ -142,10 +174,13 @@ const setRelativeTarget = (element, seconds) => {
  */
 const applyPlaygroundControls = () => {
     const ratio = Number(ratioControl.value)
+    const appearance = appearanceControl.value
+    const animation = FADE_ONLY_APPEARANCES.includes(appearance) ? 'fade' : animationControl.value
 
-    playground.setAttribute('appearance', appearanceControl.value)
-    playground.setAttribute('animation', animationControl.value)
-    playground.setAttribute('lang', localeControl.value)
+    playground.setAttribute('appearance', appearance)
+    playground.setAttribute('animation', animation)
+    playground.legend = legendControl.checked ? LEGENDS[localeControl.value] ?? LEGENDS.en : false
+    animationControl.value = animation
 
     if (Number.isFinite(ratio) && ratio > 0) {
         playground.setAttribute('ratio', String(ratio))
@@ -160,6 +195,7 @@ const applyPlaygroundControls = () => {
 setRelativeTarget(playground, 172800)
 document.querySelectorAll('.example-countdown').forEach((element) => {
     setRelativeTarget(element, Number(element.dataset.duration))
+    element.legend = LEGENDS[element.dataset.language] ?? LEGENDS.en
 })
 applyTheme(themeControl.value)
 applyColorMode(modeControl.value)
@@ -179,6 +215,9 @@ colorControl.addEventListener('change', () => {
 })
 appearanceControl.addEventListener('change', applyPlaygroundControls)
 animationControl.addEventListener('change', applyPlaygroundControls)
+legendControl.addEventListener('input', applyPlaygroundControls)
+legendControl.addEventListener('change', applyPlaygroundControls)
+localeControl.addEventListener('input', applyPlaygroundControls)
 localeControl.addEventListener('change', applyPlaygroundControls)
 ratioControl.addEventListener('change', applyPlaygroundControls)
 ratioControl.addEventListener('input', applyPlaygroundControls)

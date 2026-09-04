@@ -1,10 +1,26 @@
+/*******************************************************************************
+ *
+ * This file is part of the LGS1920/countdown project.
+ *
+ * File: countdown.js
+ *
+ * Author : LGS1920 Team
+ * email: studio@lgs1920.fr
+ *
+ * Created on: 2026-09-04
+ * Last modified: 2026-09-04
+ *
+ *
+ * Copyright © 2026 LGS1920
+ ******************************************************************************/
+
 const DAY_IN_MILLISECONDS = 24 * 60 * 60 * 1000
 const MAX_COUNTDOWN_DAYS = 999
 const MAX_COUNTDOWN_MILLISECONDS = MAX_COUNTDOWN_DAYS * DAY_IN_MILLISECONDS
 const COUNTDOWN_FLIP_DURATION = 650
 const COUNTDOWN_FADE_DURATION = COUNTDOWN_FLIP_DURATION
 export const GOLDEN_RATIO = (1 + Math.sqrt(5)) / 2
-const COUNTDOWN_APPEARANCES = ['filled', 'outlined', 'filled-outlined']
+const COUNTDOWN_APPEARANCES = ['filled', 'outlined', 'filled-outlined', 'plain']
 const COUNTDOWN_ANIMATIONS = ['flip', 'fade']
 
 const COUNTDOWN_UNITS = [
@@ -14,27 +30,16 @@ const COUNTDOWN_UNITS = [
     {key: 'seconds', width: 2},
 ]
 
+const DEFAULT_LEGEND = {
+    days:    'Days',
+    hours:   'Hours',
+    minutes: 'Minutes',
+    seconds: 'Seconds',
+}
+
 const COUNTDOWN_COPY = {
-    en: {
-        labels: {
-            days:    'Days',
-            hours:   'Hours',
-            minutes: 'Minutes',
-            seconds: 'Seconds',
-        },
-        invalid:  'This countdown cannot be displayed.',
-        tooFar:   'The target date must be within 999 days.',
-    },
-    fr: {
-        labels: {
-            days:    'Jours',
-            hours:   'Heures',
-            minutes: 'Minutes',
-            seconds: 'Secondes',
-        },
-        invalid:  'Ce compte à rebours ne peut pas être affiché.',
-        tooFar:   'La date cible doit être située dans les 999 prochains jours.',
-    },
+    invalid: 'This countdown cannot be displayed.',
+    tooFar:  'The target date must be within 999 days.',
 }
 
 const COUNTDOWN_STYLES = `
@@ -88,6 +93,19 @@ const COUNTDOWN_STYLES = `
         min-inline-size: 0;
     }
 
+    :host([appearance='plain']) .countdown-digits {
+        gap: 0;
+    }
+
+    :host([appearance='plain']) wa-animation {
+        margin-inline: -0.25rem;
+    }
+
+    :host([appearance='plain']) .rotor-top,
+    :host([appearance='plain']) .rotor-bottom {
+        padding-inline: 0;
+    }
+
     wa-animation {
         display: grid;
         place-items: center;
@@ -115,7 +133,8 @@ const COUNTDOWN_STYLES = `
         background-color: var(--lgs-countdown-card-surface);
     }
 
-    wa-card.countdown-digit-card[appearance='outlined'] {
+    wa-card.countdown-digit-card[appearance='outlined'],
+    wa-card.countdown-digit-card[appearance='plain'] {
         --lgs-countdown-rotor-surface: transparent;
         background-color: transparent;
     }
@@ -126,6 +145,10 @@ const COUNTDOWN_STYLES = `
     }
 
     wa-card.countdown-digit-card[appearance='filled'] {
+        border: 0;
+    }
+
+    wa-card.countdown-digit-card[appearance='plain'] {
         border: 0;
     }
 
@@ -409,14 +432,14 @@ export const getCountdownRatio = (value) => {
  * Resolves the Web Awesome card appearance used by the countdown digits.
  *
  * @param {unknown} value - Appearance value from the component attribute.
- * @returns {'filled'|'outlined'|'filled-outlined'} Supported card appearance.
+ * @returns {'filled'|'outlined'|'filled-outlined'|'plain'} Supported card appearance.
  */
 export function getCountdownAppearance(value) {
     return COUNTDOWN_APPEARANCES.includes(value) ? value : 'filled-outlined'
 }
 
 /**
- * Resolves the digit transition while enforcing the outlined-card restriction.
+ * Resolves the digit transition while enforcing the outlined and plain card restrictions.
  *
  * @param {unknown} value - Animation value from the component attribute.
  * @param {unknown} appearance - Resolved card appearance.
@@ -425,7 +448,7 @@ export function getCountdownAppearance(value) {
 export function getCountdownAnimation(value, appearance) {
     const animation = COUNTDOWN_ANIMATIONS.includes(value) ? value : 'flip'
 
-    return appearance === 'outlined' ? 'fade' : animation
+    return appearance === 'outlined' || appearance === 'plain' ? 'fade' : animation
 }
 
 /**
@@ -439,20 +462,10 @@ const getUnitDisplayValues = (parts) => Object.fromEntries(COUNTDOWN_UNITS.map((
     formatUnitValue(parts[key], key === 'days' ? Math.min(3, Math.max(1, String(parts[key]).length)) : width),
 ]))
 
-/**
- * Resolves the component locale from its explicit or inherited language.
- *
- * @param {HTMLElement} element - Countdown element.
- * @returns {'en'|'fr'} Supported component locale.
- */
-const getLocale = (element) => {
-    const explicitLocale = element.getAttribute('lang')
-    const inheritedLocale = element.closest?.('[lang]')?.getAttribute('lang')
-    const documentLocale = typeof document === 'undefined' ? '' : document.documentElement.lang
-    const locale = explicitLocale || inheritedLocale || documentLocale || 'en'
-
-    return locale.toLowerCase().startsWith('fr') ? 'fr' : 'en'
-}
+const normalizeLegend = (value) => value === false ? false : Object.fromEntries(COUNTDOWN_UNITS.map(({key}) => [
+    key,
+    typeof value?.[key] === 'string' && value[key].trim() !== '' ? value[key] : DEFAULT_LEGEND[key],
+]))
 
 /**
  * Escapes static label text before inserting it into the component shadow tree.
@@ -472,7 +485,7 @@ const escapeHtml = (value) => value
  *
  * @param {string} value - Initial digit value.
  * @param {number} index - Digit index within its unit.
- * @param {'filled'|'outlined'|'filled-outlined'} appearance - Web Awesome card appearance.
+ * @param {'filled'|'outlined'|'filled-outlined'|'plain'} appearance - Web Awesome card appearance.
  * @param {'flip'|'fade'} animation - Digit transition.
  * @returns {string} Digit card markup.
  */
@@ -496,21 +509,20 @@ const createDigitMarkup = (value, index, appearance, animation) => `
  * Creates the initial countdown layout using Web Awesome cards and animation elements.
  *
  * @param {{days: number, hours: number, minutes: number, seconds: number}} parts - Countdown parts.
- * @param {'en'|'fr'} locale - Component locale.
- * @param {'filled'|'outlined'|'filled-outlined'} appearance - Web Awesome card appearance.
+ * @param {Record<string, string>|false} legend - Labels for each countdown unit, or false to hide them.
+ * @param {'filled'|'outlined'|'filled-outlined'|'plain'} appearance - Web Awesome card appearance.
  * @param {'flip'|'fade'} animation - Digit transition.
  * @returns {string} Countdown shadow DOM markup.
  */
-const createCountdownMarkup = (parts, locale, appearance, animation) => {
-    const copy = COUNTDOWN_COPY[locale]
+const createCountdownMarkup = (parts, legend, appearance, animation) => {
     const values = getUnitDisplayValues(parts)
-    const accessibleValues = COUNTDOWN_UNITS.map(({key}) => `${copy.labels[key]} ${values[key]}`).join(', ')
+    const accessibleValues = getAccessibleCountdownText(parts, legend)
     const unitsMarkup = COUNTDOWN_UNITS.map(({key}) => `
         <div class="countdown-unit" data-unit="${key}">
             <div class="countdown-digits" aria-hidden="true">
                 ${[...values[key]].map((value, index) => createDigitMarkup(value, index, appearance, animation)).join('')}
             </div>
-            <span class="countdown-label">${escapeHtml(copy.labels[key])}</span>
+            ${legend === false ? '' : `<span class="countdown-label">${escapeHtml(legend[key])}</span>`}
         </div>
     `).join('')
 
@@ -525,15 +537,13 @@ const createCountdownMarkup = (parts, locale, appearance, animation) => {
 }
 
 /**
- * Creates the localized Web Awesome error state.
+ * Creates the Web Awesome error state.
  *
- * @param {'en'|'fr'} locale - Component locale.
  * @param {'missing'|'invalid'|'too-far'} status - Validation status.
  * @returns {string} Error state markup.
  */
-const createErrorMarkup = (locale, status) => {
-    const copy = COUNTDOWN_COPY[locale]
-    const message = status === 'too-far' ? copy.tooFar : copy.invalid
+const createErrorMarkup = (status) => {
+    const message = status === 'too-far' ? COUNTDOWN_COPY.tooFar : COUNTDOWN_COPY.invalid
 
     return `<wa-callout variant="danger" appearance="filled-outlined" role="alert">${escapeHtml(message)}</wa-callout>`
 }
@@ -542,14 +552,13 @@ const createErrorMarkup = (locale, status) => {
  * Returns the accessible announcement for a countdown state.
  *
  * @param {{days: number, hours: number, minutes: number, seconds: number}} parts - Countdown parts.
- * @param {'en'|'fr'} locale - Component locale.
- * @returns {string} Localized accessible countdown text.
+ * @param {Record<string, string>|false} legend - Labels for each countdown unit, or false to hide them.
+ * @returns {string} Accessible countdown text.
  */
-const getAccessibleCountdownText = (parts, locale) => {
-    const copy = COUNTDOWN_COPY[locale]
+const getAccessibleCountdownText = (parts, legend) => {
     const values = getUnitDisplayValues(parts)
 
-    return COUNTDOWN_UNITS.map(({key}) => `${copy.labels[key]} ${values[key]}`).join(', ')
+    return COUNTDOWN_UNITS.map(({key}) => `${legend === false ? '' : `${legend[key]} `}${values[key]}`).join(', ')
 }
 
 /**
@@ -564,10 +573,10 @@ const shouldAnimate = () => typeof window === 'undefined'
 const CountdownElementBase = typeof HTMLElement === 'undefined' ? class {} : HTMLElement
 
 /**
- * Displays a localized, branded countdown using Web Awesome components.
+ * Displays a branded countdown with optional unit labels using Web Awesome components.
  */
 export class Lgs1920Countdown extends CountdownElementBase {
-    static observedAttributes = ['target-date', 'ratio', 'appearance', 'animation', 'lang']
+    static observedAttributes = ['target-date', 'ratio', 'appearance', 'animation']
 
     /**
      * Creates the countdown shadow root and initializes its timer state.
@@ -579,7 +588,8 @@ export class Lgs1920Countdown extends CountdownElementBase {
         this.renderedDigitCount = null
         this.renderedAppearance = null
         this.renderedAnimation = null
-        this.renderedLocale = null
+        this.renderedLegend = null
+        this._legend = {...DEFAULT_LEGEND}
 
         if (typeof this.attachShadow === 'function') {
             this.attachShadow({mode: 'open'})
@@ -589,6 +599,23 @@ export class Lgs1920Countdown extends CountdownElementBase {
         }
 
         this.applyRatio()
+    }
+
+    get legend() {
+        return this._legend
+    }
+
+    set legend(value) {
+        const nextLegend = normalizeLegend(value)
+        const changed = nextLegend === false || this._legend === false
+            ? nextLegend !== this._legend
+            : COUNTDOWN_UNITS.some(({key}) => nextLegend[key] !== this._legend?.[key])
+
+        this._legend = nextLegend
+
+        if (changed) {
+            this.updateCountdown()
+        }
     }
 
     /**
@@ -624,7 +651,7 @@ export class Lgs1920Countdown extends CountdownElementBase {
             return
         }
 
-        if (name === 'appearance' || name === 'animation' || name === 'lang') {
+        if (name === 'appearance' || name === 'animation') {
             this.updateCountdown()
             return
         }
@@ -675,28 +702,28 @@ export class Lgs1920Countdown extends CountdownElementBase {
             return
         }
 
-        const locale = getLocale(this)
+        const legend = this.legend
         const state = getCountdownState(this.getAttribute('target-date'))
         const digitCount = state.parts ? getUnitDisplayValues(state.parts).days.length : null
         const appearance = getCountdownAppearance(this.getAttribute('appearance'))
         const animation = getCountdownAnimation(this.getAttribute('animation'), appearance)
 
-        if (state.status !== this.renderedStatus || digitCount !== this.renderedDigitCount || appearance !== this.renderedAppearance || animation !== this.renderedAnimation || locale !== this.renderedLocale) {
+        if (state.status !== this.renderedStatus || digitCount !== this.renderedDigitCount || appearance !== this.renderedAppearance || animation !== this.renderedAnimation || legend !== this.renderedLegend) {
             this.renderedStatus = state.status
             this.renderedDigitCount = digitCount
             this.renderedAppearance = appearance
             this.renderedAnimation = animation
-            this.renderedLocale = locale
+            this.renderedLegend = legend
 
             if (state.parts) {
-                this.shadowRoot.innerHTML = `<style>${COUNTDOWN_STYLES}</style>${createCountdownMarkup(state.parts, locale, appearance, animation)}`
+                this.shadowRoot.innerHTML = `<style>${COUNTDOWN_STYLES}</style>${createCountdownMarkup(state.parts, legend, appearance, animation)}`
             } else {
-                this.shadowRoot.innerHTML = `<style>${COUNTDOWN_STYLES}</style>${createErrorMarkup(locale, state.status)}`
+                this.shadowRoot.innerHTML = `<style>${COUNTDOWN_STYLES}</style>${createErrorMarkup(state.status)}`
             }
         }
 
         if (state.parts) {
-            this.updateDigits(state.parts, locale, appearance, animation)
+            this.updateDigits(state.parts, legend, appearance, animation)
 
             if (state.status === 'expired') {
                 this.stopTimer()
@@ -708,11 +735,11 @@ export class Lgs1920Countdown extends CountdownElementBase {
      * Updates the numeric halves and accessible label for the current countdown parts.
      *
      * @param {{days: number, hours: number, minutes: number, seconds: number}} parts - Countdown parts.
-     * @param {'en'|'fr'} locale - Component locale.
-     * @param {'filled'|'outlined'|'filled-outlined'} appearance - Web Awesome card appearance.
+     * @param {Record<string, string>|false} legend - Labels for each countdown unit, or false to hide them.
+     * @param {'filled'|'outlined'|'filled-outlined'|'plain'} appearance - Web Awesome card appearance.
      * @param {'flip'|'fade'} animation - Digit transition.
      */
-    updateDigits = (parts, locale, appearance, animation) => {
+    updateDigits = (parts, legend, appearance, animation) => {
         const values = getUnitDisplayValues(parts)
         const countdown = this.shadowRoot.querySelector('.countdown')
         const previousValues = this.previousValues || {}
@@ -795,7 +822,7 @@ export class Lgs1920Countdown extends CountdownElementBase {
             })
         })
 
-        const accessibleText = getAccessibleCountdownText(parts, locale)
+        const accessibleText = getAccessibleCountdownText(parts, legend)
         if (countdown) {
             countdown.setAttribute('aria-label', accessibleText)
         }

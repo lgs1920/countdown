@@ -1,3 +1,19 @@
+/*******************************************************************************
+ *
+ * This file is part of the LGS1920/countdown project.
+ *
+ * File: countdown.test.js
+ *
+ * Author : LGS1920 Team
+ * email: studio@lgs1920.fr
+ *
+ * Created on: 2026-09-04
+ * Last modified: 2026-09-04
+ *
+ *
+ * Copyright © 2026 LGS1920
+ ******************************************************************************/
+
 import assert from 'node:assert/strict'
 import test from 'node:test'
 
@@ -9,8 +25,12 @@ test('exposes custom element lifecycle callbacks on its prototype', () => {
     assert.equal(typeof Lgs1920Countdown.prototype.attributeChangedCallback, 'function')
 })
 
-test('observes locale changes for immediate re-rendering', () => {
-    assert.ok(Lgs1920Countdown.observedAttributes.includes('lang'))
+test('uses a legend object instead of the removed lang attribute', () => {
+    const legendProperty = Object.getOwnPropertyDescriptor(Lgs1920Countdown.prototype, 'legend')
+
+    assert.ok(!Lgs1920Countdown.observedAttributes.includes('lang'))
+    assert.equal(typeof legendProperty?.get, 'function')
+    assert.equal(typeof legendProperty?.set, 'function')
 })
 
 test('uses the golden ratio as the default card height-to-width ratio', () => {
@@ -29,14 +49,16 @@ test('uses the Web Awesome filled-outlined appearance by default', () => {
     assert.equal(getCountdownAppearance('filled'), 'filled')
     assert.equal(getCountdownAppearance('outlined'), 'outlined')
     assert.equal(getCountdownAppearance('filled-outlined'), 'filled-outlined')
+    assert.equal(getCountdownAppearance('plain'), 'plain')
     assert.equal(getCountdownAppearance('custom'), 'filled-outlined')
 })
 
-test('supports fade for every appearance and forces it for outlined cards', () => {
+test('supports fade for every appearance and forces it for outlined and plain cards', () => {
     assert.equal(getCountdownAnimation(), 'flip')
     assert.equal(getCountdownAnimation('fade', 'filled'), 'fade')
     assert.equal(getCountdownAnimation('fade', 'filled-outlined'), 'fade')
     assert.equal(getCountdownAnimation('flip', 'outlined'), 'fade')
+    assert.equal(getCountdownAnimation('flip', 'plain'), 'fade')
     assert.equal(getCountdownAnimation('custom', 'filled'), 'flip')
 })
 

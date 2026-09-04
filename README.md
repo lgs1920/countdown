@@ -1,19 +1,36 @@
 # `@lgs1920/countdown`
 
-`@lgs1920/countdown` is a Web Component designed exclusively for applications using [Web Awesome](https://webawesome.com/). It renders a localized countdown with Web Awesome digit cards and requires Web Awesome at runtime for its stylesheet, theme tokens, cards, animations, and error messages. It cannot function correctly outside a Web Awesome environment.
+`@lgs1920/countdown` is a Web Component designed exclusively for applications using [Web Awesome](https://webawesome.com/). It renders a countdown with optional custom unit labels and Web Awesome digit cards. It requires Web Awesome at runtime for its stylesheet, theme tokens, cards, animations, and error messages. It cannot function correctly outside a Web Awesome environment.
 
 The current release is `1.1.1`. See the [npm package](https://www.npmjs.com/package/@lgs1920/countdown).
+
+The live demo is based on [Build Awesome (formerly Eleventy/11ty)](https://www.11ty.dev/), built with [Web Awesome](https://webawesome.com/), and uses icons from [Font Awesome](https://fontawesome.com/).
+
+## Breaking change in 1.2
+
+Version 1.2 removes the `lang` attribute. Set the translated unit labels through the `legend` property instead:
+
+```js
+countdown.legend = {
+    days: 'Jours',
+    hours: 'Heures',
+    minutes: 'Minutes',
+    seconds: 'Secondes',
+}
+```
+
+Set `legend` to `false` to hide the unit labels.
 
 The component supports:
 
 - ISO 8601 target dates with explicit timezone offsets;
 - Days from one to three digits, with a hard limit of 999 days;
 - two-digit Hours, Minutes, and Seconds values;
-- `filled`, `outlined`, and `filled-outlined` card appearances;
+- `filled`, `outlined`, `filled-outlined`, and `plain` card appearances;
 - FlipDown-style `flip` transitions and `fade` transitions;
-- automatic `fade` fallback for outlined cards;
+- automatic `fade` fallback for outlined and plain cards;
 - an adjustable `height / width` ratio using the golden ratio by default;
-- English and French labels with inherited locale detection;
+- customizable or optional unit labels through the `legend` property;
 - one horizontal row at every viewport size.
 
 ## Installation
@@ -45,9 +62,9 @@ The countdown uses these Web Awesome components at runtime:
 
 | Component | Used for |
 | --- | --- |
-| `wa-card` | The individual digit cards and their `filled`, `outlined`, and `filled-outlined` appearances. |
+| `wa-card` | The individual digit cards and their `filled`, `outlined`, `filled-outlined`, and `plain` appearances. |
 | `wa-animation` | The `flip` and `fade` transitions applied when a digit changes. |
-| `wa-callout` | The localized error state shown for missing, invalid, or out-of-range target dates. |
+| `wa-callout` | The error state shown for missing, invalid, or out-of-range target dates. |
 
 The Web Awesome stylesheet provides the `--wa-*` theme, typography, spacing, border, radius, and color tokens consumed by the component. A host application can override these tokens or the `--lgs-countdown-*` custom properties documented below.
 
@@ -81,7 +98,6 @@ The only required value is an ISO 8601 target date. Include an explicit timezone
 
 ```html
 <lgs1920-countdown
-    lang="en"
     target-date="2026-12-31T23:59:59+01:00"
 ></lgs1920-countdown>
 ```
@@ -92,7 +108,23 @@ The component renders four units in this order:
 Days     Hours     Minutes     Seconds
 ```
 
-`lang="fr"` changes the labels to `Jours`, `Heures`, `Minutes`, and `Secondes`. If `lang` is omitted, the component uses the nearest language declaration and falls back to English.
+The countdown does not manage languages. Supply the translated unit labels through the `legend` property:
+
+```js
+const countdown = document.querySelector('lgs1920-countdown')
+countdown.legend = {
+    days: 'Jours',
+    hours: 'Heures',
+    minutes: 'Minutes',
+    seconds: 'Secondes',
+}
+```
+
+To display only the digits:
+
+```js
+countdown.legend = false
+```
 
 The package registers the custom element once and exports the component class and its date and option helpers:
 
@@ -105,18 +137,23 @@ import {getCountdownState, Lgs1920Countdown} from '@lgs1920/countdown'
 | Attribute | Values | Default | Description |
 | --- | --- | --- | --- |
 | `target-date` | ISO 8601 date/time | None | Counts down to the target. Missing or invalid values render an error state. |
-| `lang` | `en`, `fr` | Inherited language or `en` | Localizes the unit labels and validation messages. |
-| `appearance` | `filled`, `outlined`, `filled-outlined` | `filled-outlined` | Selects the Web Awesome card treatment for every digit. |
+| `appearance` | `filled`, `outlined`, `filled-outlined`, `plain` | `filled-outlined` | Selects the Web Awesome card treatment for every digit. |
 | `animation` | `flip`, `fade` | `flip` | Selects the transition used when a digit changes. |
 | `ratio` | Any positive finite number | `1.618033988749895` | Sets the card `height / width` ratio. The default is the golden ratio. |
+
+## Properties
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `legend` | Object with `days`, `hours`, `minutes`, and `seconds` strings, or `false` | English labels | Sets the visible and accessible label for each countdown unit. Set to `false` to hide unit labels. |
 
 ### `target-date` validation
 
 The countdown accepts targets up to 999 days from the current time. Days use one to three cards, with a maximum value of `999`. Hours, minutes, and seconds always use two cards and are zero-padded.
 
-- A missing target displays a localized error message.
-- An invalid date displays a localized error message.
-- A target more than 999 days away displays a localized range error.
+- A missing target displays an error message.
+- An invalid date displays an error message.
+- A target more than 999 days away displays a range error.
 - An expired target remains visible at `0` days, `00` hours, `00` minutes, and `00` seconds.
 
 ```html
@@ -144,12 +181,14 @@ The component uses the standard Web Awesome appearance names:
 
 - `filled`: opaque themed fill without a border;
 - `outlined`: transparent background with a standard border;
-- `filled-outlined`: opaque themed fill with a standard border.
+- `filled-outlined`: opaque themed fill with a standard border;
+- `plain`: transparent background without a border.
 
 ```html
 <lgs1920-countdown appearance="filled" target-date="2026-12-31T23:59:59+01:00"></lgs1920-countdown>
 <lgs1920-countdown appearance="outlined" target-date="2026-12-31T23:59:59+01:00"></lgs1920-countdown>
 <lgs1920-countdown appearance="filled-outlined" target-date="2026-12-31T23:59:59+01:00"></lgs1920-countdown>
+<lgs1920-countdown appearance="plain" target-date="2026-12-31T23:59:59+01:00"></lgs1920-countdown>
 ```
 
 ## Digit animations
@@ -158,7 +197,7 @@ The component uses the standard Web Awesome appearance names:
 
 `fade` is available with every appearance. It fades the complete digit in and out, without using a rotor. The full fade lasts 650 ms, the same duration as the flip transition.
 
-`outlined` never uses a rotor. When `animation="flip"` is requested with `appearance="outlined"`, the component automatically resolves the transition to `fade`.
+`outlined` and `plain` never use a rotor. When `animation="flip"` is requested with either appearance, the component automatically resolves the transition to `fade`.
 
 ```html
 <!-- FlipDown-style transition -->
@@ -178,6 +217,13 @@ The component uses the standard Web Awesome appearance names:
 <!-- The requested flip is automatically replaced by fade -->
 <lgs1920-countdown
     appearance="outlined"
+    animation="flip"
+    target-date="2026-12-31T23:59:59+01:00"
+></lgs1920-countdown>
+
+<!-- Plain appearance always uses fade -->
+<lgs1920-countdown
+    appearance="plain"
     animation="flip"
     target-date="2026-12-31T23:59:59+01:00"
 ></lgs1920-countdown>
@@ -218,22 +264,20 @@ The four units always remain on one line. Card widths scale from the available i
 
 ## Live examples
 
-Run the Bun demo locally in watch mode:
+Run the demo locally:
 
 ```bash
 bun install
 bun run dev
 ```
 
-Then open `http://localhost:4173`. The command keeps the server running and rebuilds the demo automatically when a file changes in `src/` or `demo/`; refresh the browser to see the result. Press `Ctrl+C` to stop it. To use another port, run `PORT=4174 bun run dev`.
+Open `http://localhost:4173`.
 
-The demo includes live examples for every appearance, both animations, locale handling, ratio customization, responsive single-row rendering, theme selection, light/dark modes, and brand colors.
+The demo covers appearances, animations, languages, ratios, responsive layout, themes, color modes, and brand colors. Controls update the countdown immediately and persist in `localStorage`.
 
-Every demo control is applied immediately: selecting an appearance, animation, locale, theme, color mode, or brand color updates the playground without an additional confirmation button. The ratio updates while its value is edited. The demo bundles the Web Awesome base stylesheet and theme styles as CSS assets; the countdown package itself keeps the Web Awesome stylesheet import in the host application.
+To reset saved settings, run `localStorage.removeItem('lgs1920-countdown-demo-config')` in the browser console and reload the page.
 
-The demo stores the selected controls in the browser's `localStorage` and restores them on the next launch. To reset the saved configuration, run `localStorage.removeItem('lgs1920-countdown-demo-config')` in the browser console and reload the page.
-
-The included GitHub Actions workflow publishes the same `dist` directory to GitHub Pages whenever `main` changes. Enable GitHub Pages with the `GitHub Actions` source in the repository settings to publish the live demo at the package homepage.
+GitHub Actions publishes the demo to GitHub Pages when `main` changes.
 
 ## Publish on npm
 

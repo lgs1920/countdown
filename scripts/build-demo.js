@@ -1,4 +1,20 @@
-import {rm} from 'node:fs/promises'
+/*******************************************************************************
+ *
+ * This file is part of the LGS1920/countdown project.
+ *
+ * File: build-demo.js
+ *
+ * Author : LGS1920 Team
+ * email: studio@lgs1920.fr
+ *
+ * Created on: 2026-09-04
+ * Last modified: 2026-09-04
+ *
+ *
+ * Copyright © 2026 LGS1920
+ ******************************************************************************/
+
+import {copyFile, mkdir, rm} from 'node:fs/promises'
 
 await rm('./dist', {force: true, recursive: true})
 
@@ -37,4 +53,6 @@ if (!stylesResult.success) {
 
 await Bun.write('./dist/index.html', Bun.file('./demo/index.html'))
 await Bun.write('./dist/styles.css', Bun.file('./demo/styles.css'))
+await mkdir('./dist/assets/logo', {recursive: true})
+await copyFile('./demo/assets/logo/logo-horizontal.png', './dist/assets/logo/logo-horizontal.png')
 console.log('Demo built in ./dist')

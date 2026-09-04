@@ -1,3 +1,19 @@
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ~
+  ~ This file is part of the LGS1920/countdown project.
+  ~
+  ~ File: index.html
+  ~
+  ~ Author : LGS1920 Team
+  ~ email: studio@lgs1920.fr
+  ~
+  ~ Created on: 2026-09-04
+  ~ Last modified: 2026-09-04
+  ~
+  ~
+  ~ Copyright © 2026 LGS1920
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+
 <!doctype html>
 <html lang="en" class="wa-theme-default wa-palette-default wa-dark">
 <head>
@@ -11,10 +27,20 @@
 <body>
 <main class="demo-shell">
     <header class="demo-header">
-        <p class="eyebrow">@lgs1920/countdown</p>
-        <h1>A countdown that flips... or not.</h1>
+        <div class="demo-header-main">
+            <div class="demo-header-title">
+                <p class="eyebrow">@lgs1920/countdown</p>
+                <h1>A countdown that flips... or not.</h1>
+            </div>
+            <div class="brand-link">
+                <a id="lgs1920-home-link" class="brand-name" href="https://lgs1920.fr/" aria-label="LGS1920">
+                    <img class="brand-logo-image" src="./assets/logo/logo-horizontal.png" alt="LGS1920 logo">
+                </a>
+                <wa-tooltip for="lgs1920-home-link" placement="bottom">Live outdoor adventures. Share the stories.</wa-tooltip>
+            </div>
+        </div>
         <wa-callout class="intro" variant="brand" appearance="filled">
-            A standalone, localized Web Component with Web Awesome cards, themed surfaces, and responsive single-row rendering.
+            A standalone Web Component with optional unit labels, Web Awesome cards, themed surfaces, and responsive single-row rendering.
         </wa-callout>
     </header>
 
@@ -46,15 +72,20 @@
                 <wa-option value="filled">Filled</wa-option>
                 <wa-option value="outlined">Outlined</wa-option>
                 <wa-option value="filled-outlined">Filled outlined</wa-option>
+                <wa-option value="plain">Plain</wa-option>
             </wa-select>
             <wa-select id="animation-control" label="Animation" value="flip">
                 <wa-option value="flip"><wa-icon slot="start" name="rotate"></wa-icon>Flip</wa-option>
                 <wa-option value="fade"><wa-icon slot="start" name="eye"></wa-icon>Fade</wa-option>
             </wa-select>
-            <wa-select id="locale-control" label="Labels" value="en">
+            <wa-select id="locale-control" label="Language" value="en">
                 <wa-option value="en">English</wa-option>
                 <wa-option value="fr">Français</wa-option>
+                <wa-option value="es">Español</wa-option>
+                <wa-option value="de">Deutsch</wa-option>
+                <wa-option value="no">Norsk</wa-option>
             </wa-select>
+            <wa-switch id="legend-control" size="s" checked>Show unit labels</wa-switch>
             <wa-number-input id="ratio-control" label="Height / width ratio" value="1.618" min="0.1" step="0.01"></wa-number-input>
         </div>
     </section>
@@ -67,7 +98,7 @@
             </div>
             <code>target-date + 2 days</code>
         </div>
-        <lgs1920-countdown id="playground-countdown" appearance="filled-outlined" animation="flip" lang="en"></lgs1920-countdown>
+        <lgs1920-countdown id="playground-countdown" appearance="filled-outlined" animation="flip"></lgs1920-countdown>
     </section>
 
     <section class="examples" aria-labelledby="examples-title">
@@ -83,21 +114,28 @@
                     <h3>Filled outlined · flip</h3>
                     <p>Recommended default with an opaque themed surface and standard Web Awesome border.</p>
                 </div>
-                <lgs1920-countdown class="example-countdown" appearance="filled-outlined" animation="flip" lang="en" data-duration="172800"></lgs1920-countdown>
+                <lgs1920-countdown class="example-countdown" appearance="filled-outlined" animation="flip" data-language="en" data-duration="172800"></lgs1920-countdown>
             </wa-card>
             <wa-card class="example-card">
                 <div class="example-copy">
                     <h3>Filled · fade</h3>
                     <p>A solid card treatment with the same 650 ms transition duration.</p>
                 </div>
-                <lgs1920-countdown class="example-countdown" appearance="filled" animation="fade" lang="en" data-duration="43200"></lgs1920-countdown>
+                <lgs1920-countdown class="example-countdown" appearance="filled" animation="fade" data-language="en" data-duration="43200"></lgs1920-countdown>
             </wa-card>
             <wa-card class="example-card">
                 <div class="example-copy">
                     <h3>Outlined · automatic fade</h3>
                     <p>Outlined cards never use a rotor, even when flip is requested.</p>
                 </div>
-                <lgs1920-countdown class="example-countdown" appearance="outlined" animation="flip" lang="fr" data-duration="2700"></lgs1920-countdown>
+                <lgs1920-countdown class="example-countdown" appearance="outlined" animation="flip" data-language="fr" data-duration="2700"></lgs1920-countdown>
+            </wa-card>
+            <wa-card class="example-card">
+                <div class="example-copy">
+                    <h3>Plain · automatic fade</h3>
+                    <p>Plain cards have no background or border and always use fade.</p>
+                </div>
+                <lgs1920-countdown class="example-countdown" appearance="plain" animation="flip" data-language="en" data-duration="5400"></lgs1920-countdown>
             </wa-card>
         </div>
     </section>
