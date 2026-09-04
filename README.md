@@ -1,3 +1,5 @@
+
+
 # `@lgs1920/countdown`
 
 `@lgs1920/countdown` is a Web Component designed exclusively for applications using [Web Awesome](https://webawesome.com/). It renders a countdown with optional custom unit labels and Web Awesome digit cards. It requires Web Awesome at runtime for its stylesheet, theme tokens, cards, animations, and error messages. It cannot function correctly outside a Web Awesome environment.
@@ -20,6 +22,7 @@ countdown.legend = {
     seconds: 'Secondes',
 }
 ```
+[Show Video](https://www.youtube.com/shorts/CplBV1xq1Hk)
 
 Set `legend` to `false` to hide the unit labels.
 
