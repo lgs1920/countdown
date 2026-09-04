@@ -2,7 +2,7 @@
 
 `@lgs1920/countdown` is a Web Component designed exclusively for applications using [Web Awesome](https://webawesome.com/). It renders a countdown with optional custom unit labels and Web Awesome digit cards. It requires Web Awesome at runtime for its stylesheet, theme tokens, cards, animations, and error messages. It cannot function correctly outside a Web Awesome environment.
 
-The current release is `1.1.2`. See the [npm package](https://www.npmjs.com/package/@lgs1920/countdown).
+The current release is `1.2.0`. See the [npm package](https://www.npmjs.com/package/@lgs1920/countdown).
 
 The live demo is based on [Build Awesome (formerly Eleventy/11ty)](https://www.11ty.dev/), built with [Web Awesome](https://webawesome.com/), and uses icons from [Font Awesome](https://fontawesome.com/).
 
