@@ -124,10 +124,12 @@
                 <wa-option value="de">Deutsch</wa-option>
                 <wa-option value="no">Norsk</wa-option>
             </wa-select>
-            <wa-switch id="legend-control" size="s" checked>Show unit labels</wa-switch>
-            <wa-switch id="show-all-digits-control" class="show-all-digits-control" size="s">Show all digits</wa-switch>
-            <wa-switch id="no-seconds-control" size="s">Hide seconds</wa-switch>
             <wa-number-input id="ratio-control" label="Height / width ratio" size="s" value="1.618" min="0.1" step="0.01"></wa-number-input>
+            <div class="control-switches" aria-label="Countdown unit visibility">
+                <wa-switch id="legend-control" size="s" checked>Show unit labels</wa-switch>
+                <wa-switch id="show-all-digits-control" class="show-all-digits-control" size="s">Show all digits</wa-switch>
+                <wa-switch id="no-seconds-control" size="s">Hide seconds</wa-switch>
+            </div>
         </div>
     </section>
 

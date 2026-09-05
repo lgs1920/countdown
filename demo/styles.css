@@ -228,57 +228,21 @@ h3 {
 .controls-grid {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
-    grid-template-areas:
-        "theme mode color appearance"
-        "animation locale ratio empty"
-        "legend show-all no-seconds empty";
     align-items: end;
     gap: 1rem;
 }
 
-#theme-control {
-    grid-area: theme;
+.control-switches {
+    display: flex;
+    grid-column: 1 / -1;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: var(--wa-space-l);
 }
 
-#mode-control {
-    grid-area: mode;
-}
-
-#color-control {
-    grid-area: color;
-}
-
-#appearance-control {
-    grid-area: appearance;
-}
-
-#animation-control {
-    grid-area: animation;
-}
-
-#locale-control {
-    grid-area: locale;
-}
-
-#ratio-control {
-    grid-area: ratio;
-}
-
-#legend-control {
-    align-self: center;
-    justify-self: center;
-    grid-area: legend;
-}
-
-.show-all-digits-control {
-    justify-self: center;
-    grid-area: show-all;
-}
-
-#no-seconds-control {
-    align-self: center;
-    justify-self: center;
-    grid-area: no-seconds;
+.control-switches wa-switch {
+    flex: 0 1 auto;
 }
 
 .playground {
@@ -638,11 +602,6 @@ a {
 @media (max-width: 1100px) {
     .controls-grid {
         grid-template-columns: repeat(3, minmax(0, 1fr));
-        grid-template-areas:
-            "theme mode color"
-            "appearance animation locale"
-            "ratio empty empty"
-            "legend show-all no-seconds";
     }
 }
 
@@ -657,12 +616,10 @@ a {
         grid-template-columns: 1fr;
     }
 
-    .controls-grid {
-        grid-template-areas: none;
-    }
-
-    .controls-grid > * {
-        grid-area: auto;
+    .control-switches {
+        align-items: stretch;
+        flex-direction: column;
+        gap: var(--wa-space-s);
     }
 
     .demo-header-main {
