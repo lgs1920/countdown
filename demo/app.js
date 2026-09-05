@@ -16,11 +16,14 @@
 
 import '@awesome.me/webawesome/dist/components/number-input/number-input.js'
 import '@awesome.me/webawesome/dist/components/option/option.js'
+import '@awesome.me/webawesome/dist/components/copy-button/copy-button.js'
 import '@awesome.me/webawesome/dist/components/select/select.js'
 import '@awesome.me/webawesome/dist/components/switch/switch.js'
 import '@awesome.me/webawesome/dist/components/icon/icon.js'
-import '@awesome.me/webawesome/dist/components/tooltip/tooltip.js'
+import '@awesome.me/webawesome/dist/components/breadcrumb/breadcrumb.js'
+import '@awesome.me/webawesome/dist/components/breadcrumb-item/breadcrumb-item.js'
 import '../src/index.js'
+import {highlightCode} from './syntax.js'
 
 const LEGENDS = {
     en: {days: 'Days', hours: 'Hours', minutes: 'Minutes', seconds: 'Seconds'},
@@ -52,6 +55,9 @@ const LANGUAGE_CODES = ['en', 'fr', 'es', 'de', 'no']
 const STORAGE_KEY = 'lgs1920-countdown-demo-config'
 
 const playground = document.querySelector('#playground-countdown')
+const bannerThemeControl = document.querySelector('#banner-theme-control')
+const bannerModeControl = document.querySelector('#banner-mode-control')
+const bannerColorControl = document.querySelector('#banner-color-control')
 const themeControl = document.querySelector('#theme-control')
 const modeControl = document.querySelector('#mode-control')
 const colorControl = document.querySelector('#color-control')
@@ -59,7 +65,15 @@ const appearanceControl = document.querySelector('#appearance-control')
 const animationControl = document.querySelector('#animation-control')
 const localeControl = document.querySelector('#locale-control')
 const legendControl = document.querySelector('#legend-control')
+const showAllDigitsControl = document.querySelector('#show-all-digits-control')
+const noSecondsControl = document.querySelector('#no-seconds-control')
 const ratioControl = document.querySelector('#ratio-control')
+
+const syncBannerControls = () => {
+    bannerThemeControl.value = themeControl.value
+    bannerModeControl.value = modeControl.value
+    bannerColorControl.value = colorControl.value
+}
 
 const readStoredConfig = () => {
     try {
@@ -73,6 +87,8 @@ const readStoredConfig = () => {
             animation: ['flip', 'fade'].includes(storedConfig.animation) ? storedConfig.animation : animationControl.value,
             locale: LANGUAGE_CODES.includes(storedConfig.locale) ? storedConfig.locale : localeControl.value,
             legend: typeof storedConfig.legend === 'boolean' ? storedConfig.legend : legendControl.checked,
+            showAllDigits: typeof storedConfig.showAllDigits === 'boolean' ? storedConfig.showAllDigits : showAllDigitsControl.checked,
+            noSeconds: typeof storedConfig.noSeconds === 'boolean' ? storedConfig.noSeconds : noSecondsControl.checked,
             ratio: typeof storedConfig.ratio === 'string' ? storedConfig.ratio : ratioControl.value,
         }
     } catch {
@@ -84,6 +100,8 @@ const readStoredConfig = () => {
             animation: animationControl.value,
             locale: localeControl.value,
             legend: legendControl.checked,
+            showAllDigits: showAllDigitsControl.checked,
+            noSeconds: noSecondsControl.checked,
             ratio: ratioControl.value,
         }
     }
@@ -97,9 +115,11 @@ const saveConfig = () => {
             color: colorControl.value,
             appearance: appearanceControl.value,
             animation: animationControl.value,
-            locale: localeControl.value,
-            legend: legendControl.checked,
-            ratio: ratioControl.value,
+        locale: localeControl.value,
+        legend: legendControl.checked,
+        showAllDigits: showAllDigitsControl.checked,
+        noSeconds: noSecondsControl.checked,
+        ratio: ratioControl.value,
         }))
     } catch {
     }
@@ -113,7 +133,10 @@ appearanceControl.value = storedConfig.appearance
 animationControl.value = storedConfig.animation
 localeControl.value = storedConfig.locale
 legendControl.checked = storedConfig.legend
+showAllDigitsControl.checked = storedConfig.showAllDigits
+noSecondsControl.checked = storedConfig.noSeconds
 ratioControl.value = storedConfig.ratio
+syncBannerControls()
 
 /**
  * Applies a Web Awesome theme and its matching free palette to the document.
@@ -170,6 +193,51 @@ const setRelativeTarget = (element, seconds) => {
 }
 
 /**
+ * Renders a syntax-highlighted public usage example with a Web Awesome copy button.
+ *
+ * @param {Element} element - Countdown example element.
+ */
+const renderExampleCode = (element) => {
+    const container = element.closest('.example-card')?.querySelector('.example-code')
+
+    if (!container) {
+        return
+    }
+
+    const attributes = [
+        `appearance="${element.getAttribute('appearance')}"`,
+        `animation="${element.getAttribute('animation')}"`,
+    ]
+
+    if (element.hasAttribute('show-all-digits')) {
+        attributes.push('show-all-digits')
+    }
+
+    if (element.hasAttribute('no-seconds')) {
+        attributes.push('no-seconds')
+    }
+
+    attributes.push(`target-date="${element.getAttribute('target-date')}"`)
+
+    const codeText = `<lgs1920-countdown\n${attributes.map((attribute) => `    ${attribute}`).join('\n')}\n></lgs1920-countdown>`
+    const code = document.createElement('code')
+    code.className = 'language-html'
+    code.innerHTML = highlightCode(codeText, 'html')
+
+    const pre = document.createElement('pre')
+    pre.append(code)
+
+    const copyButton = document.createElement('wa-copy-button')
+    copyButton.setAttribute('value', codeText)
+    copyButton.setAttribute('copy-label', 'Copy')
+    copyButton.setAttribute('success-label', 'Copied')
+    copyButton.setAttribute('error-label', 'Copy failed')
+    copyButton.setAttribute('tooltip', 'full')
+
+    container.replaceChildren(pre, copyButton)
+}
+
+/**
  * Applies the interactive playground controls to the main countdown immediately.
  */
 const applyPlaygroundControls = () => {
@@ -179,6 +247,8 @@ const applyPlaygroundControls = () => {
 
     playground.setAttribute('appearance', appearance)
     playground.setAttribute('animation', animation)
+    playground.showAllDigits = showAllDigitsControl.checked
+    playground.noSeconds = noSecondsControl.checked
     playground.legend = legendControl.checked ? LEGENDS[localeControl.value] ?? LEGENDS.en : false
     animationControl.value = animation
 
@@ -196,6 +266,7 @@ setRelativeTarget(playground, 172800)
 document.querySelectorAll('.example-countdown').forEach((element) => {
     setRelativeTarget(element, Number(element.dataset.duration))
     element.legend = LEGENDS[element.dataset.language] ?? LEGENDS.en
+    renderExampleCode(element)
 })
 applyTheme(themeControl.value)
 applyColorMode(modeControl.value)
@@ -203,13 +274,31 @@ applyBrandColor(colorControl.value)
 applyPlaygroundControls()
 themeControl.addEventListener('change', () => {
     applyTheme(themeControl.value)
+    bannerThemeControl.value = themeControl.value
     saveConfig()
 })
 modeControl.addEventListener('change', () => {
     applyColorMode(modeControl.value)
+    bannerModeControl.value = modeControl.value
     saveConfig()
 })
 colorControl.addEventListener('change', () => {
+    applyBrandColor(colorControl.value)
+    bannerColorControl.value = colorControl.value
+    saveConfig()
+})
+bannerThemeControl.addEventListener('change', () => {
+    themeControl.value = bannerThemeControl.value
+    applyTheme(themeControl.value)
+    saveConfig()
+})
+bannerModeControl.addEventListener('change', () => {
+    modeControl.value = bannerModeControl.value
+    applyColorMode(modeControl.value)
+    saveConfig()
+})
+bannerColorControl.addEventListener('change', () => {
+    colorControl.value = bannerColorControl.value
     applyBrandColor(colorControl.value)
     saveConfig()
 })
@@ -219,5 +308,9 @@ legendControl.addEventListener('input', applyPlaygroundControls)
 legendControl.addEventListener('change', applyPlaygroundControls)
 localeControl.addEventListener('input', applyPlaygroundControls)
 localeControl.addEventListener('change', applyPlaygroundControls)
+showAllDigitsControl.addEventListener('input', applyPlaygroundControls)
+showAllDigitsControl.addEventListener('change', applyPlaygroundControls)
+noSecondsControl.addEventListener('input', applyPlaygroundControls)
+noSecondsControl.addEventListener('change', applyPlaygroundControls)
 ratioControl.addEventListener('change', applyPlaygroundControls)
 ratioControl.addEventListener('input', applyPlaygroundControls)
