@@ -15,6 +15,8 @@
  ******************************************************************************/
 
 const DAY_IN_MILLISECONDS = 24 * 60 * 60 * 1000
+const HOUR_IN_SECONDS = 60 * 60
+const DAY_IN_SECONDS = 24 * HOUR_IN_SECONDS
 const MAX_COUNTDOWN_DAYS = 999
 const MAX_COUNTDOWN_MILLISECONDS = MAX_COUNTDOWN_DAYS * DAY_IN_MILLISECONDS
 const COUNTDOWN_FLIP_DURATION = 650
@@ -60,6 +62,7 @@ const COUNTDOWN_STYLES = `
     }
 
     .countdown {
+        --lgs-countdown-unit-count: 4;
         display: grid;
         gap: var(--wa-space-s, 0.75rem);
         min-inline-size: 0;
@@ -67,7 +70,7 @@ const COUNTDOWN_STYLES = `
 
     .countdown-units {
         display: grid;
-        grid-template-columns: repeat(4, max-content);
+        grid-template-columns: repeat(var(--lgs-countdown-unit-count), max-content);
         align-items: center;
         gap: var(--lgs-countdown-unit-gap);
         justify-content: center;
@@ -391,6 +394,34 @@ export const getCountdownParts = (targetDate, now = new Date()) => {
 }
 
 /**
+ * Determines which countdown units should be visible for the initial duration.
+ *
+ * @param {number} totalSeconds - Initial countdown duration in seconds.
+ * @param {boolean} showAllDigits - Whether zero-valued days and hours remain visible.
+ * @param {boolean} noSeconds - Whether seconds should be hidden.
+ * @returns {string[]} Visible countdown unit keys.
+ */
+export const getCountdownVisibleUnits = (totalSeconds, showAllDigits = false, noSeconds = false) => {
+    const visibleUnits = []
+
+    if (showAllDigits || totalSeconds >= DAY_IN_SECONDS) {
+        visibleUnits.push('days')
+    }
+
+    if (showAllDigits || totalSeconds >= HOUR_IN_SECONDS) {
+        visibleUnits.push('hours')
+    }
+
+    visibleUnits.push('minutes')
+
+    if (!noSeconds) {
+        visibleUnits.push('seconds')
+    }
+
+    return visibleUnits
+}
+
+/**
  * Parses and validates a countdown target date.
  *
  * @param {string|null|undefined} targetValue - ISO 8601 target date from the component attribute.
@@ -531,12 +562,13 @@ const createDigitMarkup = (value, index, appearance, animation) => {
  * @param {Record<string, string>|false} legend - Labels for each countdown unit, or false to hide them.
  * @param {'filled'|'outlined'|'filled-outlined'|'plain'} appearance - Web Awesome card appearance.
  * @param {'flip'|'fade'} animation - Digit transition.
+ * @param {string[]} visibleUnits - Unit keys rendered in the countdown.
  * @returns {string} Countdown shadow DOM markup.
  */
-const createCountdownMarkup = (parts, legend, appearance, animation) => {
+const createCountdownMarkup = (parts, legend, appearance, animation, visibleUnits = COUNTDOWN_UNITS.map(({key}) => key)) => {
     const values = getUnitDisplayValues(parts)
-    const accessibleValues = getAccessibleCountdownText(parts, legend)
-    const unitsMarkup = COUNTDOWN_UNITS.map(({key}) => `
+    const accessibleValues = getAccessibleCountdownText(parts, legend, visibleUnits)
+    const unitsMarkup = COUNTDOWN_UNITS.filter(({key}) => visibleUnits.includes(key)).map(({key}) => `
         <div class="countdown-unit" data-unit="${key}">
             <div class="countdown-digits" aria-hidden="true">
                 ${[...values[key]].map((value, index) => createDigitMarkup(value, index, appearance, animation)).join('')}
@@ -546,7 +578,7 @@ const createCountdownMarkup = (parts, legend, appearance, animation) => {
     `).join('')
 
     return `
-        <div class="countdown" role="timer" aria-live="off" aria-atomic="true" aria-label="${escapeHtml(accessibleValues)}">
+        <div class="countdown" style="--lgs-countdown-unit-count: ${visibleUnits.length}" role="timer" aria-live="off" aria-atomic="true" aria-label="${escapeHtml(accessibleValues)}">
             <div class="countdown-units">
                 ${unitsMarkup}
             </div>
@@ -574,10 +606,13 @@ const createErrorMarkup = (status) => {
  * @param {Record<string, string>|false} legend - Labels for each countdown unit, or false to hide them.
  * @returns {string} Accessible countdown text.
  */
-const getAccessibleCountdownText = (parts, legend) => {
+const getAccessibleCountdownText = (parts, legend, visibleUnits = COUNTDOWN_UNITS.map(({key}) => key)) => {
     const values = getUnitDisplayValues(parts)
 
-    return COUNTDOWN_UNITS.map(({key}) => `${legend === false ? '' : `${legend[key]} `}${values[key]}`).join(', ')
+    return COUNTDOWN_UNITS
+        .filter(({key}) => visibleUnits.includes(key))
+        .map(({key}) => `${legend === false ? '' : `${legend[key]} `}${values[key]}`)
+        .join(', ')
 }
 
 /**
@@ -595,7 +630,7 @@ const CountdownElementBase = typeof HTMLElement === 'undefined' ? class {} : HTM
  * Displays a branded countdown with optional unit labels using Web Awesome components.
  */
 export class Lgs1920Countdown extends CountdownElementBase {
-    static observedAttributes = ['target-date', 'ratio', 'appearance', 'animation']
+    static observedAttributes = ['target-date', 'ratio', 'appearance', 'animation', 'show-all-digits', 'no-seconds']
 
     /**
      * Creates the countdown shadow root and initializes its timer state.
@@ -608,6 +643,10 @@ export class Lgs1920Countdown extends CountdownElementBase {
         this.renderedAppearance = null
         this.renderedAnimation = null
         this.renderedLegend = null
+        this.renderedUnits = null
+        this.visibleUnits = null
+        this._showAllDigits = false
+        this._noSeconds = false
         this._legend = {...DEFAULT_LEGEND}
 
         if (typeof this.attachShadow === 'function') {
@@ -637,6 +676,38 @@ export class Lgs1920Countdown extends CountdownElementBase {
         }
     }
 
+    get showAllDigits() {
+        return this._showAllDigits
+    }
+
+    set showAllDigits(value) {
+        const nextValue = value === true
+
+        if (typeof this.toggleAttribute === 'function') {
+            this.toggleAttribute('show-all-digits', nextValue)
+            return
+        }
+
+        this._showAllDigits = nextValue
+        this.visibleUnits = null
+    }
+
+    get noSeconds() {
+        return this._noSeconds
+    }
+
+    set noSeconds(value) {
+        const nextValue = value === true
+
+        if (typeof this.toggleAttribute === 'function') {
+            this.toggleAttribute('no-seconds', nextValue)
+            return
+        }
+
+        this._noSeconds = nextValue
+        this.visibleUnits = null
+    }
+
     /**
      * Starts or refreshes the countdown when the element is connected.
      */
@@ -661,7 +732,29 @@ export class Lgs1920Countdown extends CountdownElementBase {
      * @param {string|null} newValue - New attribute value.
      */
     attributeChangedCallback(name, oldValue, newValue) {
-        if (oldValue === newValue || !this.isConnected) {
+        if (oldValue === newValue) {
+            return
+        }
+
+        if (name === 'show-all-digits') {
+            this._showAllDigits = newValue !== null
+            this.visibleUnits = null
+            if (this.isConnected) {
+                this.updateCountdown()
+            }
+            return
+        }
+
+        if (name === 'no-seconds') {
+            this._noSeconds = newValue !== null
+            this.visibleUnits = null
+            if (this.isConnected) {
+                this.updateCountdown()
+            }
+            return
+        }
+
+        if (!this.isConnected) {
             return
         }
 
@@ -679,6 +772,7 @@ export class Lgs1920Countdown extends CountdownElementBase {
             return
         }
 
+        this.visibleUnits = null
         this.stopTimer()
         this.updateCountdown()
         this.startTimer()
@@ -723,26 +817,32 @@ export class Lgs1920Countdown extends CountdownElementBase {
 
         const legend = this.legend
         const state = getCountdownState(this.getAttribute('target-date'))
-        const digitCount = state.parts ? getUnitDisplayValues(state.parts).days.length : null
+        const visibleUnits = state.parts
+            ? this.visibleUnits ??= getCountdownVisibleUnits(state.parts.totalSeconds, this._showAllDigits, this._noSeconds)
+            : []
+        const digitCount = state.parts && visibleUnits.includes('days') ? getUnitDisplayValues(state.parts).days.length : null
+        const unitSignature = visibleUnits.join(',')
         const appearance = getCountdownAppearance(this.getAttribute('appearance'))
         const animation = getCountdownAnimation(this.getAttribute('animation'), appearance)
 
-        if (state.status !== this.renderedStatus || digitCount !== this.renderedDigitCount || appearance !== this.renderedAppearance || animation !== this.renderedAnimation || legend !== this.renderedLegend) {
+        if (state.status !== this.renderedStatus || digitCount !== this.renderedDigitCount || unitSignature !== this.renderedUnits || appearance !== this.renderedAppearance || animation !== this.renderedAnimation || legend !== this.renderedLegend) {
             this.renderedStatus = state.status
             this.renderedDigitCount = digitCount
+            this.renderedUnits = unitSignature
             this.renderedAppearance = appearance
             this.renderedAnimation = animation
             this.renderedLegend = legend
+            this.previousValues = null
 
             if (state.parts) {
-                this.shadowRoot.innerHTML = `<style>${COUNTDOWN_STYLES}</style>${createCountdownMarkup(state.parts, legend, appearance, animation)}`
+                this.shadowRoot.innerHTML = `<style>${COUNTDOWN_STYLES}</style>${createCountdownMarkup(state.parts, legend, appearance, animation, visibleUnits)}`
             } else {
                 this.shadowRoot.innerHTML = `<style>${COUNTDOWN_STYLES}</style>${createErrorMarkup(state.status)}`
             }
         }
 
         if (state.parts) {
-            this.updateDigits(state.parts, legend, appearance, animation)
+            this.updateDigits(state.parts, legend, appearance, animation, visibleUnits)
 
             if (state.status === 'expired') {
                 this.stopTimer()
@@ -757,13 +857,14 @@ export class Lgs1920Countdown extends CountdownElementBase {
      * @param {Record<string, string>|false} legend - Labels for each countdown unit, or false to hide them.
      * @param {'filled'|'outlined'|'filled-outlined'|'plain'} appearance - Web Awesome card appearance.
      * @param {'flip'|'fade'} animation - Digit transition.
+     * @param {string[]} visibleUnits - Unit keys rendered in the countdown.
      */
-    updateDigits(parts, legend, appearance, animation) {
+    updateDigits(parts, legend, appearance, animation, visibleUnits = COUNTDOWN_UNITS.map(({key}) => key)) {
         const values = getUnitDisplayValues(parts)
         const countdown = this.shadowRoot.querySelector('.countdown')
         const previousValues = this.previousValues || {}
 
-        COUNTDOWN_UNITS.forEach(({key}) => {
+        COUNTDOWN_UNITS.filter(({key}) => visibleUnits.includes(key)).forEach(({key}) => {
             const value = values[key]
             const previousValue = previousValues[key]
             const digits = [...value]
@@ -844,7 +945,7 @@ export class Lgs1920Countdown extends CountdownElementBase {
             })
         })
 
-        const accessibleText = getAccessibleCountdownText(parts, legend)
+        const accessibleText = getAccessibleCountdownText(parts, legend, visibleUnits)
         if (countdown) {
             countdown.setAttribute('aria-label', accessibleText)
         }

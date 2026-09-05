@@ -38,6 +38,8 @@ The component supports:
 - automatic `fade` fallback for outlined and plain cards;
 - an adjustable `height / width` ratio using the golden ratio by default;
 - customizable or optional unit labels through the `legend` property;
+- optional hiding of unused Days and Hours units through `showAllDigits`;
+- optional hiding of Seconds through `noSeconds`;
 - one horizontal row at every viewport size.
 
 ## Installation
@@ -119,6 +121,26 @@ To display only the digits:
 countdown.legend = false
 ```
 
+By default, Days and Hours are only displayed when they are part of the initial countdown duration. Once an initial duration includes one of these units, that unit remains visible until the countdown expires. Minutes and Seconds are displayed by default.
+
+Use `show-all-digits` to keep all four units visible, including zero-valued Days and Hours:
+
+```html
+<lgs1920-countdown
+    show-all-digits
+    target-date="2026-12-31T23:59:59+01:00"
+></lgs1920-countdown>
+```
+
+Use `no-seconds` to display only the relevant day, hour, and minute units:
+
+```html
+<lgs1920-countdown
+    no-seconds
+    target-date="2026-12-31T23:59:59+01:00"
+></lgs1920-countdown>
+```
+
 Unit labels expose the public `legend` CSS part. Customize their size from the host application with `::part(legend)`:
 
 ```css
@@ -141,12 +163,16 @@ import {getCountdownState, Lgs1920Countdown} from '@lgs1920/countdown'
 | `appearance` | `filled`, `outlined`, `filled-outlined`, `plain` | `filled-outlined` | Selects the Web Awesome card treatment for every digit. |
 | `animation` | `flip`, `fade` | `flip` | Selects the transition used when a digit changes. |
 | `ratio` | Any positive finite number | `1.618033988749895` | Sets the card `height / width` ratio. The default is the golden ratio. |
+| `show-all-digits` | Boolean attribute | Not set | Keeps Days and Hours visible even when their values are zero. |
+| `no-seconds` | Boolean attribute | Not set | Hides the Seconds unit. |
 
 ## Properties
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
 | `legend` | Object with `days`, `hours`, `minutes`, and `seconds` strings, or `false` | English labels | Sets the visible and accessible label for each countdown unit. Set to `false` to hide unit labels. |
+| `showAllDigits` | Boolean | `false` | Keeps Days and Hours visible even when their values are zero. |
+| `noSeconds` | Boolean | `false` | Hides the Seconds unit while keeping Minutes visible. |
 
 ### `target-date` validation
 

@@ -17,7 +17,7 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
 
-import {GOLDEN_RATIO, getCountdownAnimation, getCountdownAppearance, getCountdownParts, getCountdownRatio, getCountdownState, Lgs1920Countdown, MAX_COUNTDOWN_DAYS} from '../src/countdown.js'
+import {GOLDEN_RATIO, getCountdownAnimation, getCountdownAppearance, getCountdownParts, getCountdownRatio, getCountdownState, getCountdownVisibleUnits, Lgs1920Countdown, MAX_COUNTDOWN_DAYS} from '../src/countdown.js'
 
 test('exposes custom element lifecycle callbacks on its prototype', () => {
     assert.equal(typeof Lgs1920Countdown.prototype.connectedCallback, 'function')
@@ -42,6 +42,20 @@ test('falls back to the golden ratio for invalid card ratios', () => {
     assert.equal(getCountdownRatio('0'), GOLDEN_RATIO)
     assert.equal(getCountdownRatio('-1'), GOLDEN_RATIO)
     assert.equal(getCountdownRatio('not-a-ratio'), GOLDEN_RATIO)
+})
+
+test('hides unused day and hour units by default', () => {
+    assert.deepEqual(getCountdownVisibleUnits(12 * 60 * 60), ['hours', 'minutes', 'seconds'])
+    assert.deepEqual(getCountdownVisibleUnits(45 * 60), ['minutes', 'seconds'])
+})
+
+test('keeps every unit when the initial duration activates it', () => {
+    assert.deepEqual(getCountdownVisibleUnits((2 * 24 + 3) * 60 * 60), ['days', 'hours', 'minutes', 'seconds'])
+})
+
+test('shows all units when showAllDigits is enabled and can hide seconds', () => {
+    assert.deepEqual(getCountdownVisibleUnits(12 * 60 * 60, true), ['days', 'hours', 'minutes', 'seconds'])
+    assert.deepEqual(getCountdownVisibleUnits(12 * 60 * 60, false, true), ['hours', 'minutes'])
 })
 
 test('uses the Web Awesome filled-outlined appearance by default', () => {
