@@ -53,5 +53,5 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          git tag --format='%(contents)' --list "$GITHUB_REF_NAME" > "$RUNNER_TEMP/release-notes.md"
+          git cat-file tag "refs/tags/$GITHUB_REF_NAME" | sed '1,/^$/d' > "$RUNNER_TEMP/release-notes.md"
           gh release create "$GITHUB_REF_NAME" --verify-tag --title "$GITHUB_REF_NAME" --notes-file "$RUNNER_TEMP/release-notes.md"
