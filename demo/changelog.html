@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en" class="wa-theme-default wa-palette-default wa-brand-blue wa-dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Release history for the LGS1920 countdown Web Component.">
+    <title>Changelog · LGS1920 Countdown</title>
+    <link rel="stylesheet" href="./webawesome.css">
+    <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+<main class="demo-shell">
+    <nav class="site-banner" aria-label="Site navigation">
+        <div class="site-banner-left">
+            <a class="site-banner-logo" href="https://lgs1920.fr/" target="_blank" rel="noopener noreferrer" aria-label="LGS1920 website">
+                <img src="./assets/logo/logo-horizontal.png" alt="LGS1920">
+            </a>
+            <div class="site-banner-pages">
+                <a href="./" target="_blank" rel="noopener noreferrer">Demo</a>
+                <a href="./readme.html" target="_blank" rel="noopener noreferrer">README</a>
+                <a href="./changelog.html" target="_blank" rel="noopener noreferrer" aria-current="page">Changelog</a>
+            </div>
+        </div>
+        <div class="site-banner-controls" aria-label="Demo settings">
+            <wa-select id="banner-theme-control" label="Theme" size="xs" value="default">
+                <wa-option value="default">Default</wa-option>
+                <wa-option value="awesome">Awesome</wa-option>
+                <wa-option value="shoelace">Shoelace</wa-option>
+            </wa-select>
+            <wa-select id="banner-mode-control" label="Color mode" size="xs" value="dark">
+                <wa-option value="light"><wa-icon slot="start" name="sun"></wa-icon>Light</wa-option>
+                <wa-option value="dark"><wa-icon slot="start" name="moon"></wa-icon>Dark</wa-option>
+            </wa-select>
+            <wa-select id="banner-color-control" label="Brand color" size="xs" value="blue">
+                <wa-option value="blue">Blue</wa-option>
+                <wa-option value="red">Red</wa-option>
+                <wa-option value="orange">Orange</wa-option>
+                <wa-option value="green">Green</wa-option>
+                <wa-option value="cyan">Cyan</wa-option>
+                <wa-option value="purple">Purple</wa-option>
+                <wa-option value="pink">Pink</wa-option>
+            </wa-select>
+        </div>
+        <div class="site-banner-external">
+            <a href="https://github.com/lgs1920/countdown" target="_blank" rel="noopener noreferrer" aria-label="GitHub repository">
+                <wa-icon name="github" family="brands"></wa-icon>
+            </a>
+            <a href="https://www.npmjs.com/package/@lgs1920/countdown" target="_blank" rel="noopener noreferrer" aria-label="npm package">
+                <wa-icon name="npm" family="brands"></wa-icon>
+            </a>
+        </div>
+    </nav>
+    <nav class="demo-breadcrumb" aria-label="Breadcrumb">
+        <wa-breadcrumb label="Page navigation">
+            <wa-breadcrumb-item href="./" target="_blank" rel="noopener noreferrer">Home</wa-breadcrumb-item>
+            <wa-breadcrumb-item aria-current="page">Changelog</wa-breadcrumb-item>
+        </wa-breadcrumb>
+    </nav>
+    <header class="demo-header changelog-header">
+        <div class="demo-header-main">
+            <div class="demo-header-title">
+                <p class="eyebrow">Project history</p>
+                <h1>Changelog</h1>
+            </div>
+        </div>
+        <p class="intro">A version-by-version history of the LGS1920 countdown Web Component, rebuilt from the project's published Git tags at every build.</p>
+    </header>
+    <section class="changelog-content" aria-labelledby="changelog-title">
+        <h2 id="changelog-title" class="wa-visually-hidden">Published releases</h2>
+        <!-- CHANGELOG_ENTRIES -->
+    </section>
+</main>
+<script type="module" src="./readme.js"></script>
+</body>
+</html>

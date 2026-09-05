@@ -15,8 +15,25 @@
  ******************************************************************************/
 
 import {copyFile, mkdir, rm} from 'node:fs/promises'
+import {parseReleaseTags, renderChangelogEntries} from './changelog.js'
 
 const packageJson = await Bun.file('./package.json').json()
+
+const readGitReleases = () => {
+    const result = Bun.spawnSync([
+        'git',
+        'for-each-ref',
+        '--sort=-version:refname',
+        '--format=%(refname:short)%00%(creatordate:iso-strict)%00%(contents)%00',
+        'refs/tags/v*',
+    ], {stdout: 'pipe', stderr: 'pipe'})
+
+    if (result.exitCode !== 0) {
+        return []
+    }
+
+    return parseReleaseTags(new TextDecoder().decode(result.stdout))
+}
 
 await rm('./dist', {force: true, recursive: true})
 
@@ -59,6 +76,8 @@ const demoHtml = (await Bun.file('./demo/index.html').text()).replace(
 )
 
 const readmeMarkdown = (await Bun.file('./README.md').text()).replaceAll('</script', '<\\/script')
+const changelogTemplate = await Bun.file('./demo/changelog.html').text()
+const changelogHtml = changelogTemplate.replace('<!-- CHANGELOG_ENTRIES -->', renderChangelogEntries(readGitReleases()))
 const readmeHtml = `<!doctype html>
 <html lang="en" class="wa-theme-default wa-palette-default wa-brand-blue wa-dark">
 <head>
@@ -79,6 +98,7 @@ const readmeHtml = `<!doctype html>
             <div class="site-banner-pages">
                 <a href="./" target="_blank" rel="noopener noreferrer">Demo</a>
                 <a href="./readme.html" target="_blank" rel="noopener noreferrer" aria-current="page">README</a>
+                <a href="./changelog.html" target="_blank" rel="noopener noreferrer">Changelog</a>
             </div>
         </div>
         <div class="site-banner-controls" aria-label="Demo settings">
@@ -130,6 +150,7 @@ ${readmeMarkdown}
 
 await Bun.write('./dist/index.html', demoHtml)
 await Bun.write('./dist/readme.html', readmeHtml)
+await Bun.write('./dist/changelog.html', changelogHtml)
 await Bun.write('./dist/styles.css', Bun.file('./demo/styles.css'))
 await mkdir('./dist/assets/logo', {recursive: true})
 await copyFile('./demo/assets/logo/logo-horizontal.png', './dist/assets/logo/logo-horizontal.png')

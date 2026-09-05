@@ -6,7 +6,7 @@
 
 The current release is `1.2.5`. See the [npm package](https://www.npmjs.com/package/@lgs1920/countdown).
 
-[Open the live demo](https://lgs1920.github.io/countdown/) · [Visit LGS1920](https://lgs1920.fr/) · [View the repository on GitHub](https://github.com/lgs1920/countdown)
+[Open the live demo](https://lgs1920.github.io/countdown/) · [View the changelog](https://lgs1920.github.io/countdown/changelog.html) · [Visit LGS1920](https://lgs1920.fr/) · [View the repository on GitHub](https://github.com/lgs1920/countdown)
 
 The live demo is based on [Build Awesome (formerly Eleventy/11ty)](https://www.11ty.dev/), built with [Web Awesome](https://webawesome.com/), and uses icons from [Font Awesome](https://fontawesome.com/). It shows how the component counts down to a target date and lets you try its card appearances, flip and fade animations, translated labels, themes, color modes, brand colors, and responsive single-row layout.
 
