@@ -6,7 +6,9 @@
 
 The current release is `1.2.3`. See the [npm package](https://www.npmjs.com/package/@lgs1920/countdown).
 
-The live demo is based on [Build Awesome (formerly Eleventy/11ty)](https://www.11ty.dev/), built with [Web Awesome](https://webawesome.com/), and uses icons from [Font Awesome](https://fontawesome.com/).
+[Open the live demo](https://lgs1920.github.io/countdown/) · [Visit LGS1920](https://lgs1920.fr/) · [View the repository on GitHub](https://github.com/lgs1920/countdown)
+
+The live demo is based on [Build Awesome (formerly Eleventy/11ty)](https://www.11ty.dev/), built with [Web Awesome](https://webawesome.com/), and uses icons from [Font Awesome](https://fontawesome.com/). It shows how the component counts down to a target date and lets you try its card appearances, flip and fade animations, translated labels, themes, color modes, brand colors, and responsive single-row layout.
 
 Inspired by [FlipClock](https://flipclock.us/).
 
@@ -82,20 +84,6 @@ import '@awesome.me/webawesome/dist/components/callout/callout.js'
 import '@awesome.me/webawesome/dist/components/card/card.js'
 import '@lgs1920/countdown/countdown'
 ```
-
-## Themes in the demo
-
-The demo includes the three free Web Awesome themes and their matching free palettes:
-
-| Theme | Theme class | Palette class |
-| --- | --- | --- |
-| Default | `wa-theme-default` | `wa-palette-default` |
-| Awesome | `wa-theme-awesome` | `wa-palette-bright` |
-| Shoelace | `wa-theme-shoelace` | `wa-palette-shoelace` |
-
-The theme selector applies the corresponding classes to `<html>`. The color-mode selector adds either `wa-light` or `wa-dark`. The package does not impose a theme or color mode; the host application remains free to choose its own Web Awesome theme.
-
-The demo also exposes a brand-color selector using Web Awesome's free color variants: Blue, Red, Orange, Green, Cyan, Purple, and Pink. These values are applied as `wa-brand-*` classes on `<html>`.
 
 ## Basic usage
 
@@ -267,9 +255,11 @@ The four units always remain on one line. Card widths scale from the available i
 }
 ```
 
-## Live examples
+## Demo
 
-Run the demo locally:
+Use the [live demo](https://lgs1920.github.io/countdown/) directly in your browser. It provides an interactive countdown and lets you change its appearance, animation, language, labels, card ratio, theme, color mode, and brand color to see how the component behaves.
+
+To run the demo locally:
 
 ```bash
 bun install
@@ -278,7 +268,7 @@ bun run dev
 
 Open `http://localhost:4173`.
 
-The demo covers appearances, animations, languages, ratios, responsive layout, themes, color modes, and brand colors. Controls update the countdown immediately and persist in `localStorage`.
+Controls update the countdown immediately and persist in `localStorage`.
 
 To reset saved settings, run `localStorage.removeItem('lgs1920-countdown-demo-config')` in the browser console and reload the page.
 
