@@ -119,6 +119,14 @@ To display only the digits:
 countdown.legend = false
 ```
 
+Unit labels expose the public `legend` CSS part. Customize their size from the host application with `::part(legend)`:
+
+```css
+lgs1920-countdown::part(legend) {
+    font-size: 0.75rem;
+}
+```
+
 The package registers the custom element once and exports the component class and its date and option helpers:
 
 ```js

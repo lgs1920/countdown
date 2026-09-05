@@ -541,7 +541,7 @@ const createCountdownMarkup = (parts, legend, appearance, animation) => {
             <div class="countdown-digits" aria-hidden="true">
                 ${[...values[key]].map((value, index) => createDigitMarkup(value, index, appearance, animation)).join('')}
             </div>
-            ${legend === false ? '' : `<span class="countdown-label">${escapeHtml(legend[key])}</span>`}
+            ${legend === false ? '' : `<span class="countdown-label countdown-legend" part="legend">${escapeHtml(legend[key])}</span>`}
         </div>
     `).join('')
 
