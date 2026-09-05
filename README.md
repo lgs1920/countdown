@@ -323,7 +323,7 @@ bun run publish --minor
 bun run publish --major
 ```
 
-The script stops when there are uncommitted changes or when no changes have been made in `src` or `scripts` since the last `v*` tag. When it succeeds, it updates `package.json` and this README, creates the version commit and tag, then pushes them to `main`. The tag starts the GitHub Actions workflow, which runs the tests, publishes the package to npm with the `NPM_TOKEN` repository secret, and creates the GitHub release.
+Preview the proposed version and release notes with `bun run publish --preview` or `bun run publish --minor --preview`. The preview makes no changes. After reviewing and validating the proposed text, run `bun run publish` with the selected increment. The script stops when there are uncommitted changes or when no changes have been made in `src` or `scripts` since the last `v*` tag. When it succeeds, it updates `package.json` and this README, creates the version commit and annotated tag, then pushes them to `main`. The tag starts the GitHub Actions workflow, which runs the tests and build, publishes the package to npm with the `NPM_TOKEN` repository secret, and creates the GitHub release from the validated tag notes with the release summary and comparison link.
 
 ## License
 

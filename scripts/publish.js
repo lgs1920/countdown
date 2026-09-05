@@ -18,13 +18,15 @@ if (process.env.COUNTDOWN_BUN_PUBLISH_LIFECYCLE === '1') process.exit(0);
 
 const args = Bun.argv.slice(2);
 const increments = ['patch', 'minor', 'major'];
+const preview = args.includes('--preview');
+const incrementArgs = args.filter(arg => arg !== '--preview');
 
-if (args.length > 1 || args.some(arg => !increments.includes(arg.slice(2)) || !arg.startsWith('--'))) {
-  console.error('Usage: bun run publish [--patch|--minor|--major]');
+if (incrementArgs.length > 1 || incrementArgs.some(arg => !increments.includes(arg.slice(2)) || !arg.startsWith('--'))) {
+  console.error('Usage: bun run publish [--patch|--minor|--major] [--preview]');
   process.exit(1);
 }
 
-const increment = args.length === 0 ? 'patch' : args[0].slice(2);
+const increment = incrementArgs.length === 0 ? 'patch' : incrementArgs[0].slice(2);
 
 function output(command, commandArgs) {
   const result = Bun.spawnSync([command, ...commandArgs], {
@@ -110,6 +112,13 @@ const tagMessage = `v${nextVersion}\n\nChanges:\n${releaseChanges}\n\nChanges be
 if (!releaseLine.test(readme)) {
   console.error('Publication arrêtée : ligne de version introuvable dans README.md.');
   process.exit(1);
+}
+
+if (preview) {
+  console.log(`Proposed release: v${nextVersion}`);
+  console.log('');
+  console.log(tagMessage);
+  process.exit(0);
 }
 
 const updatedReadme = readme.replace(releaseLine, `The current release is \`${nextVersion}\``);
