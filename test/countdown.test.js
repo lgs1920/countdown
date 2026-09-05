@@ -62,6 +62,63 @@ test('supports fade for every appearance and forces it for outlined and plain ca
     assert.equal(getCountdownAnimation('custom', 'filled'), 'flip')
 })
 
+test('updates fade digits without requiring rotor faces', () => {
+    const classNames = new Set()
+    const fadeDigit = {
+        isConnected: true,
+        matches: (selector) => selector === '.fade-value',
+        classList: {
+            add: (className) => classNames.add(className),
+            remove: (className) => classNames.delete(className),
+        },
+        get offsetWidth() {
+            return 0
+        },
+        textContent: '0',
+    }
+    const countdown = {
+        setAttribute: () => {},
+    }
+    const unit = {
+        querySelectorAll: () => [fadeDigit],
+    }
+    const previousSetTimeout = globalThis.setTimeout
+
+    globalThis.setTimeout = (callback) => {
+        callback()
+        return 0
+    }
+
+    try {
+        Lgs1920Countdown.prototype.updateDigits.call({
+            shadowRoot: {
+                querySelector: (selector) => selector === '.countdown' ? countdown : unit,
+            },
+            previousValues: {
+                days: '0',
+                hours: '00',
+                minutes: '00',
+                seconds: '00',
+            },
+        }, {
+            days: 0,
+            hours: 0,
+            minutes: 0,
+            seconds: 10,
+        }, {
+            days: 'Days',
+            hours: 'Hours',
+            minutes: 'Minutes',
+            seconds: 'Seconds',
+        }, 'plain', 'fade')
+    } finally {
+        globalThis.setTimeout = previousSetTimeout
+    }
+
+    assert.equal(fadeDigit.textContent, '1')
+    assert.equal(classNames.has('is-fading-out'), false)
+})
+
 test('calculates days, hours, minutes, and seconds from an absolute target date', () => {
     const now = new Date('2026-01-01T00:00:00.000Z')
     const target = new Date('2026-01-03T04:05:06.000Z')

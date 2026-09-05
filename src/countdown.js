@@ -152,10 +152,6 @@ const COUNTDOWN_STYLES = `
         border: 0;
     }
 
-    .countdown-animation[data-countdown-animation='fade'] .rotor-leaf {
-        display: none;
-    }
-
     wa-card.countdown-digit-card::part(body) {
         display: grid;
         place-items: center;
@@ -164,6 +160,15 @@ const COUNTDOWN_STYLES = `
         padding: 0;
         overflow: hidden;
         border-radius: inherit;
+    }
+
+    .rotor,
+    .fade-value {
+        font-size: calc(var(--lgs-countdown-card-width) * var(--lgs-countdown-height-width-ratio) * 0.9);
+        font-family: var(--wa-font-family-heading, sans-serif);
+        font-variant-numeric: tabular-nums;
+        font-weight: 750;
+        line-height: 1;
     }
 
     .rotor {
@@ -175,12 +180,16 @@ const COUNTDOWN_STYLES = `
         overflow: visible;
         perspective: 150px;
         transform-style: preserve-3d;
-        font-size: calc(var(--lgs-countdown-card-width) * var(--lgs-countdown-height-width-ratio) * 0.9);
-        font-family: var(--wa-font-family-heading, sans-serif);
-        font-variant-numeric: tabular-nums;
-        font-weight: 750;
-        line-height: 1;
         background: var(--lgs-countdown-rotor-surface);
+        opacity: 1;
+        transition: opacity ${COUNTDOWN_FADE_DURATION / 2}ms ease-in-out;
+    }
+
+    .fade-value {
+        display: grid;
+        place-items: center;
+        block-size: 100%;
+        inline-size: 100%;
         opacity: 1;
         transition: opacity ${COUNTDOWN_FADE_DURATION / 2}ms ease-in-out;
     }
@@ -198,6 +207,10 @@ const COUNTDOWN_STYLES = `
     }
 
     .rotor.is-fading-out {
+        opacity: 0;
+    }
+
+    .fade-value.is-fading-out {
         opacity: 0;
     }
 
@@ -489,21 +502,27 @@ const escapeHtml = (value) => value
  * @param {'flip'|'fade'} animation - Digit transition.
  * @returns {string} Digit card markup.
  */
-const createDigitMarkup = (value, index, appearance, animation) => `
-    <wa-animation class="countdown-animation" data-countdown-animation="${animation}" name="${animation}" duration="${COUNTDOWN_FLIP_DURATION}" easing="ease-in-out">
-        <wa-card class="countdown-digit-card" appearance="${appearance}">
-            <span class="rotor" data-digit-index="${index}">
-                <span class="rotor-leaf">
-                    <span class="rotor-leaf-rear"><span class="rotor-face-value" data-face="rear">${value}</span></span>
-                    <span class="rotor-leaf-front"><span class="rotor-face-value" data-face="front">${value}</span></span>
-                </span>
-                <span class="rotor-top"><span class="rotor-face-value" data-face="top">${value}</span></span>
-                <span class="rotor-bottom"><span class="rotor-face-value" data-face="bottom">${value}</span></span>
-                <span class="rotor-hinge" aria-hidden="true"></span>
+const createDigitMarkup = (value, index, appearance, animation) => {
+    const digitMarkup = animation === 'fade'
+        ? `<span class="fade-value" data-digit-index="${index}">${value}</span>`
+        : `<span class="rotor" data-digit-index="${index}">
+            <span class="rotor-leaf">
+                <span class="rotor-leaf-rear"><span class="rotor-face-value" data-face="rear">${value}</span></span>
+                <span class="rotor-leaf-front"><span class="rotor-face-value" data-face="front">${value}</span></span>
             </span>
-        </wa-card>
-    </wa-animation>
-`
+            <span class="rotor-top"><span class="rotor-face-value" data-face="top">${value}</span></span>
+            <span class="rotor-bottom"><span class="rotor-face-value" data-face="bottom">${value}</span></span>
+            <span class="rotor-hinge" aria-hidden="true"></span>
+        </span>`
+
+    return `
+        <wa-animation class="countdown-animation" data-countdown-animation="${animation}" name="${animation}" duration="${COUNTDOWN_FLIP_DURATION}" easing="ease-in-out">
+            <wa-card class="countdown-digit-card" appearance="${appearance}">
+                ${digitMarkup}
+            </wa-card>
+        </wa-animation>
+    `
+}
 
 /**
  * Creates the initial countdown layout using Web Awesome cards and animation elements.
@@ -739,7 +758,7 @@ export class Lgs1920Countdown extends CountdownElementBase {
      * @param {'filled'|'outlined'|'filled-outlined'|'plain'} appearance - Web Awesome card appearance.
      * @param {'flip'|'fade'} animation - Digit transition.
      */
-    updateDigits = (parts, legend, appearance, animation) => {
+    updateDigits(parts, legend, appearance, animation) {
         const values = getUnitDisplayValues(parts)
         const countdown = this.shadowRoot.querySelector('.countdown')
         const previousValues = this.previousValues || {}
@@ -761,6 +780,27 @@ export class Lgs1920Countdown extends CountdownElementBase {
                 }
 
                 const changed = previousValue !== undefined && previousValue[index] !== nextValue
+                if (digit.matches('.fade-value')) {
+                    if (!changed || !shouldAnimate()) {
+                        digit.textContent = nextValue
+                        digit.classList.remove('is-fading-out')
+                        return
+                    }
+
+                    digit.classList.remove('is-fading-out')
+                    void digit.offsetWidth
+                    digit.classList.add('is-fading-out')
+                    setTimeout(function () {
+                        if (!digit.isConnected) {
+                            return
+                        }
+
+                        digit.textContent = nextValue
+                        digit.classList.remove('is-fading-out')
+                    }, COUNTDOWN_FADE_DURATION / 2)
+                    return
+                }
+
                 const front = digit.querySelector('[data-face="front"]')
                 const rear = digit.querySelector('[data-face="rear"]')
                 const top = digit.querySelector('[data-face="top"]')
@@ -785,24 +825,6 @@ export class Lgs1920Countdown extends CountdownElementBase {
                 }
 
                 const currentValue = previousValue[index]
-
-                if (animation === 'fade') {
-                    digit.classList.remove('is-fading-out')
-                    void digit.offsetWidth
-                    digit.classList.add('is-fading-out')
-                    setTimeout(function () {
-                        if (!digit.isConnected) {
-                            return
-                        }
-
-                        front.textContent = nextValue
-                        rear.textContent = nextValue
-                        top.textContent = nextValue
-                        bottom.textContent = nextValue
-                        digit.classList.remove('is-fading-out')
-                    }, COUNTDOWN_FADE_DURATION / 2)
-                    return
-                }
 
                 leaf.style.visibility = 'hidden'
                 leaf.classList.remove('flipped')
